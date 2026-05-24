@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>경마형 제비뽑기</title>
+<title>경마형 제비뽑기 — Derby Battle</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bowlby+One&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg-1: #0b1414;
     --bg-2: #102020;
-    --grass-dark: #1f4d2e;
-    --grass-mid:  #2a6a3e;
-    --grass-light:#3a8a50;
-    --track-1: #c98b5a;
-    --track-2: #b1764a;
-    --track-line: #f4e3c2;
+    --dirt-1: #8b4513;
+    --dirt-2: #a0522d;
+    --dirt-3: #6b3410;
+    --dirt-light: #c4732b;
+    --grass-edge: #2a6a3e;
     --accent: #ffd23f;
     --accent-2: #ff5e3a;
+    --accent-3: #3aa9ff;
     --ink: #f5efe0;
     --ink-dim: #b8b09a;
     --panel: #161f1f;
@@ -40,8 +40,8 @@
       var(--bg-1);
     display: grid;
     grid-template-rows: auto 1fr auto;
-    gap: 10px;
-    padding: 14px;
+    gap: 8px;
+    padding: 10px;
   }
 
   /* ============ HEADER ============ */
@@ -49,66 +49,51 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: 16px;
-    padding: 10px 18px;
+    gap: 12px;
+    padding: 8px 14px;
     background: linear-gradient(180deg, #1a2424, #0f1818);
     border: 1px solid var(--border);
     border-radius: 4px;
     box-shadow: 0 0 0 1px #000 inset, 0 4px 12px rgba(0,0,0,0.4);
   }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .brand { display: flex; align-items: center; gap: 10px; }
   .brand-logo {
-    width: 36px; height: 36px;
+    width: 32px; height: 32px;
     background: var(--accent);
     color: #0b1414;
     display: grid;
     place-items: center;
     font-family: "Bowlby One", sans-serif;
-    font-size: 22px;
+    font-size: 18px;
     transform: skewX(-10deg);
   }
   .brand-logo span { transform: skewX(10deg); }
   .brand-title {
     font-family: "Bebas Neue", sans-serif;
-    font-size: 28px;
-    letter-spacing: 3px;
+    font-size: 24px;
+    letter-spacing: 2.5px;
   }
   .brand-sub {
     font-family: "JetBrains Mono", monospace;
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 2px;
     color: var(--ink-dim);
     margin-top: -3px;
   }
-
   .marquee {
     font-family: "Bebas Neue", sans-serif;
-    letter-spacing: 4px;
-    font-size: 30px;
+    letter-spacing: 3px;
+    font-size: 22px;
     text-align: center;
     color: var(--accent);
     text-shadow: 2px 2px 0 #000;
   }
-  .marquee em {
-    color: var(--ink);
-    font-style: normal;
-  }
-
-  .clock-wrap {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 10px;
-  }
+  .marquee em { color: var(--ink); font-style: normal; }
+  .clock-wrap { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
   .status-pill {
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    padding: 4px 10px;
+    font-size: 10px;
+    padding: 3px 8px;
     border: 1px solid var(--border);
     border-radius: 2px;
     background: #0b1414;
@@ -117,16 +102,15 @@
   .status-pill.live { color: #ff5e3a; }
   .status-pill.idle { color: var(--ink-dim); }
   .status-pill.done { color: var(--accent); }
-
   .clock {
     font-family: "JetBrains Mono", monospace;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--accent);
     background: #000;
-    padding: 4px 12px;
+    padding: 3px 10px;
     border: 1px solid var(--border);
-    min-width: 110px;
+    min-width: 95px;
     text-align: center;
     letter-spacing: 2px;
   }
@@ -134,11 +118,12 @@
   /* ============ MAIN ============ */
   .stage {
     display: grid;
-    grid-template-columns: 1fr 280px;
-    gap: 12px;
+    grid-template-columns: 240px 1fr 240px;
+    gap: 8px;
     min-height: 0;
   }
 
+  /* 트랙 */
   .track-wrap {
     position: relative;
     background: var(--panel);
@@ -149,40 +134,51 @@
     display: flex;
     flex-direction: column;
   }
-
   .track-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 12px;
+    padding: 4px 12px;
     background: #0b1414;
     border-bottom: 1px solid var(--border);
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--ink-dim);
     letter-spacing: 1px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
-  .track-header .race-no {
-    color: var(--accent);
-    font-weight: 700;
-  }
+  .track-header .race-no { color: var(--accent); font-weight: 700; }
+  .track-header .distance-info { color: var(--ink-dim); }
+  .track-header .phase { color: var(--accent-2); font-weight: 700; }
 
   .track {
     flex: 1;
     position: relative;
     background:
-      linear-gradient(180deg, var(--grass-light) 0%, var(--grass-mid) 50%, var(--grass-dark) 100%);
+      /* 잔디 가장자리 */
+      linear-gradient(180deg,
+        var(--grass-edge) 0%, var(--grass-edge) 4%,
+        var(--dirt-3) 4%, var(--dirt-2) 8%,
+        var(--dirt-1) 50%,
+        var(--dirt-2) 92%, var(--dirt-3) 96%,
+        var(--grass-edge) 96%, var(--grass-edge) 100%);
     overflow: hidden;
   }
-
-  /* 잔디 텍스처 */
+  /* 흙 텍스처 (점, 자갈) */
   .track::before {
     content: "";
     position: absolute;
     inset: 0;
     background-image:
-      repeating-linear-gradient(45deg, rgba(0,0,0,0.06) 0 2px, transparent 2px 6px),
-      repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0 2px, transparent 2px 7px);
+      radial-gradient(circle at 10% 30%, rgba(0,0,0,0.15) 1px, transparent 2px),
+      radial-gradient(circle at 25% 65%, rgba(255,255,255,0.05) 1px, transparent 2px),
+      radial-gradient(circle at 40% 20%, rgba(0,0,0,0.1) 1px, transparent 2px),
+      radial-gradient(circle at 55% 80%, rgba(0,0,0,0.12) 1px, transparent 2px),
+      radial-gradient(circle at 70% 40%, rgba(255,255,255,0.04) 1px, transparent 2px),
+      radial-gradient(circle at 85% 70%, rgba(0,0,0,0.1) 1px, transparent 2px),
+      radial-gradient(circle at 95% 25%, rgba(0,0,0,0.08) 1px, transparent 2px);
+    background-size: 30px 30px, 40px 40px, 25px 25px, 35px 35px, 28px 28px, 42px 42px, 33px 33px;
     pointer-events: none;
   }
 
@@ -191,35 +187,30 @@
     inset: 0;
     display: flex;
     flex-direction: column;
+    padding: 0;
   }
-
   .lane {
     flex: 1;
     position: relative;
-    border-bottom: 1px dashed rgba(255,255,255,0.18);
-    background: linear-gradient(90deg,
-      rgba(0,0,0,0.0) 0%,
-      rgba(0,0,0,0.08) 50%,
-      rgba(0,0,0,0.0) 100%);
+    border-bottom: 1px dashed rgba(255,255,255,0.15);
   }
   .lane:nth-child(even) {
     background: linear-gradient(90deg,
-      rgba(255,255,255,0.02) 0%,
-      rgba(255,255,255,0.04) 50%,
-      rgba(255,255,255,0.02) 100%);
+      rgba(0,0,0,0.05) 0%,
+      rgba(0,0,0,0.08) 50%,
+      rgba(0,0,0,0.05) 100%);
   }
   .lane:last-child { border-bottom: none; }
-
   .lane-label {
     position: absolute;
-    left: 6px;
+    left: 4px;
     top: 50%;
     transform: translateY(-50%);
     font-family: "Bowlby One", sans-serif;
-    font-size: 13px;
-    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
     text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
-    width: 22px;
+    width: 18px;
     text-align: center;
     z-index: 1;
   }
@@ -227,42 +218,36 @@
   /* 출발선 */
   .start-line {
     position: absolute;
-    left: 50px;
+    left: 35px;
     top: 0; bottom: 0;
-    width: 6px;
-    background: repeating-linear-gradient(
-      0deg,
-      #fff 0 8px,
-      #000 8px 16px
-    );
+    width: 5px;
+    background: repeating-linear-gradient(0deg, #fff 0 8px, #000 8px 16px);
     z-index: 2;
-    opacity: 0.85;
+    opacity: 0.9;
   }
-  /* 결승선 */
   .finish-line {
     position: absolute;
-    right: 50px;
+    right: 35px;
     top: 0; bottom: 0;
-    width: 10px;
+    width: 8px;
     background: repeating-conic-gradient(#fff 0 25%, #000 0 50%);
-    background-size: 10px 10px;
+    background-size: 8px 8px;
     z-index: 2;
-    box-shadow: 0 0 12px rgba(255, 210, 63, 0.4);
+    box-shadow: 0 0 12px rgba(255, 210, 63, 0.5);
   }
   .finish-flag {
     position: absolute;
-    right: 40px;
+    right: 25px;
     top: -2px;
     font-family: "Bebas Neue", sans-serif;
     color: var(--accent);
-    font-size: 14px;
+    font-size: 12px;
     letter-spacing: 2px;
     background: #000;
-    padding: 2px 8px;
+    padding: 2px 6px;
     z-index: 3;
     border: 1px solid var(--accent);
   }
-
   /* 거리 표시 */
   .distance-marks {
     position: absolute;
@@ -272,173 +257,220 @@
   }
   .distance-marks span {
     position: absolute;
-    top: 4px;
+    top: 2px;
     font-family: "JetBrains Mono", monospace;
     font-size: 9px;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.5);
     transform: translateX(-50%);
+    background: rgba(0,0,0,0.3);
+    padding: 1px 4px;
+    border-radius: 2px;
   }
 
-  /* 말 - SVG 기반 */
-  .horse {
+  /* ============ 동물 캐릭터 ============ */
+  .racer {
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 5;
     will-change: left;
-    transition: left 0.12s linear;
+    transition: left 0.1s linear;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 1px;
   }
-  .horse-svg {
-    width: 56px;
-    height: 40px;
-    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.45));
+  .racer-name {
+    font-family: "Noto Sans KR", sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(0,0,0,0.7);
+    padding: 1px 4px;
+    border-radius: 2px;
+    white-space: nowrap;
+    line-height: 1.2;
+    margin-bottom: 1px;
+  }
+  .racer-svg {
+    width: 42px;
+    height: 32px;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.5));
     overflow: visible;
   }
-  /* 몸통 살짝 위아래로 흔들림 */
-  .horse.running .horse-svg {
-    animation: body-bob 0.32s ease-in-out infinite;
+  .racer.running .racer-svg {
+    animation: body-bob 0.22s ease-in-out infinite;
   }
   @keyframes body-bob {
     0%, 100% { transform: translateY(0) rotate(-1deg); }
     50%      { transform: translateY(-3px) rotate(1deg); }
   }
-  /* 갈기, 꼬리 휘날림 */
-  .mane, .tail {
-    transform-origin: right center;
-    animation: mane-wave 0.35s ease-in-out infinite;
+
+  /* 다리/발 갤럽 */
+  .leg { transform-origin: top center; }
+  .racer.running .leg-1 { animation: gallop1 0.22s linear infinite; }
+  .racer.running .leg-2 { animation: gallop2 0.22s linear infinite; }
+  .racer.running .leg-3 { animation: gallop3 0.22s linear infinite; }
+  .racer.running .leg-4 { animation: gallop4 0.22s linear infinite; }
+  @keyframes gallop1 {
+    0%   { transform: rotate(-35deg); }
+    50%  { transform: rotate(30deg); }
+    100% { transform: rotate(-35deg); }
   }
-  .tail {
-    transform-origin: left center;
-    animation: tail-wave 0.4s ease-in-out infinite;
+  @keyframes gallop2 {
+    0%   { transform: rotate(25deg); }
+    50%  { transform: rotate(-25deg); }
+    100% { transform: rotate(25deg); }
   }
-  @keyframes mane-wave {
-    0%, 100% { transform: skewY(0deg); }
-    50%      { transform: skewY(-8deg); }
+  @keyframes gallop3 {
+    0%   { transform: rotate(30deg); }
+    50%  { transform: rotate(-30deg); }
+    100% { transform: rotate(30deg); }
   }
-  @keyframes tail-wave {
-    0%, 100% { transform: rotate(-5deg); }
-    50%      { transform: rotate(15deg); }
+  @keyframes gallop4 {
+    0%   { transform: rotate(-30deg); }
+    50*  { transform: rotate(35deg); }
+    100% { transform: rotate(-30deg); }
   }
 
-  /* 4개의 다리 - 갤럽 패턴 (스텝 애니메이션) */
-  .leg {
-    transform-origin: top center;
+  /* 상태 효과 */
+  .racer.boost .racer-svg {
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.5)) drop-shadow(0 0 8px var(--accent-2));
   }
-  .horse.running .leg-fl { animation: gallop-fl 0.32s linear infinite; }
-  .horse.running .leg-fr { animation: gallop-fr 0.32s linear infinite; }
-  .horse.running .leg-bl { animation: gallop-bl 0.32s linear infinite; }
-  .horse.running .leg-br { animation: gallop-br 0.32s linear infinite; }
-
-  /* 실제 말의 갤럽 (rotary gallop) - 앞다리/뒷다리가 교차하며 차고 나감 */
-  @keyframes gallop-fl {
-    0%   { transform: rotate(-40deg) translateY(-2px); }
-    25%  { transform: rotate(20deg)  translateY(0); }
-    50%  { transform: rotate(35deg)  translateY(0); }
-    75%  { transform: rotate(-10deg) translateY(-1px); }
-    100% { transform: rotate(-40deg) translateY(-2px); }
+  .racer.shielded .racer-svg {
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.5)) drop-shadow(0 0 8px var(--accent-3));
   }
-  @keyframes gallop-fr {
-    0%   { transform: rotate(20deg)  translateY(0); }
-    25%  { transform: rotate(35deg)  translateY(0); }
-    50%  { transform: rotate(-10deg) translateY(-1px); }
-    75%  { transform: rotate(-40deg) translateY(-2px); }
-    100% { transform: rotate(20deg)  translateY(0); }
+  .racer.slowed .racer-svg {
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.5)) grayscale(0.5);
   }
-  @keyframes gallop-bl {
-    0%   { transform: rotate(35deg)  translateY(0); }
-    25%  { transform: rotate(-10deg) translateY(-1px); }
-    50%  { transform: rotate(-40deg) translateY(-2px); }
-    75%  { transform: rotate(20deg)  translateY(0); }
-    100% { transform: rotate(35deg)  translateY(0); }
+  .racer.hit .racer-svg {
+    animation: hit-shake 0.4s ease-out;
   }
-  @keyframes gallop-br {
-    0%   { transform: rotate(-10deg) translateY(-1px); }
-    25%  { transform: rotate(-40deg) translateY(-2px); }
-    50%  { transform: rotate(20deg)  translateY(0); }
-    75%  { transform: rotate(35deg)  translateY(0); }
-    100% { transform: rotate(-10deg) translateY(-1px); }
+  @keyframes hit-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px) rotate(-8deg); }
+    40% { transform: translateX(4px) rotate(8deg); }
+    60% { transform: translateX(-3px) rotate(-5deg); }
+    80% { transform: translateX(3px) rotate(5deg); }
   }
 
-  /* 정지 상태 */
-  .horse:not(.running) .leg-fl { transform: rotate(-15deg); }
-  .horse:not(.running) .leg-fr { transform: rotate(-5deg); }
-  .horse:not(.running) .leg-bl { transform: rotate(5deg); }
-  .horse:not(.running) .leg-br { transform: rotate(15deg); }
-
-  .horse .num {
-    font-family: "Bowlby One", sans-serif;
-    font-size: 11px;
-    background: var(--ink);
-    color: #000;
-    padding: 2px 6px;
-    border-radius: 2px;
-    line-height: 1.2;
-    box-shadow: 1px 1px 0 rgba(0,0,0,0.4);
-  }
-  .horse.boost .num {
-    background: var(--accent-2);
-    color: #fff;
-    animation: boost-pulse 0.3s ease-in-out infinite alternate;
-  }
-  .horse.boost .horse-svg {
-    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.45)) drop-shadow(0 0 6px rgba(255,94,58,0.7));
-  }
-  @keyframes boost-pulse {
-    from { box-shadow: 0 0 4px var(--accent-2); }
-    to   { box-shadow: 0 0 14px var(--accent-2); }
-  }
-  /* 스피드 라인 (부스트 시) */
+  /* 스피드 라인 */
   .speed-lines {
     position: absolute;
     right: 100%;
     top: 50%;
     transform: translateY(-50%);
     width: 30px;
-    height: 30px;
+    height: 24px;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s;
   }
-  .horse.boost .speed-lines { opacity: 1; }
+  .racer.boost .speed-lines { opacity: 1; }
   .speed-lines::before, .speed-lines::after {
     content: "";
     position: absolute;
-    background: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.85);
     height: 2px;
+    border-radius: 2px;
     animation: speed-line 0.3s linear infinite;
   }
-  .speed-lines::before { width: 18px; top: 8px;  right: 4px; }
-  .speed-lines::after  { width: 24px; top: 18px; right: 0;   animation-delay: 0.15s; }
+  .speed-lines::before { width: 14px; top: 6px;  right: 0; }
+  .speed-lines::after  { width: 20px; top: 14px; right: 0; animation-delay: 0.15s; }
   @keyframes speed-line {
-    0%   { transform: translateX(0); opacity: 0.8; }
-    100% { transform: translateX(-30px); opacity: 0; }
+    0%   { transform: translateX(0); opacity: 0.85; }
+    100% { transform: translateX(-28px); opacity: 0; }
   }
 
-  /* 먼지 효과 */
+  /* 방패 효과 */
+  .shield-bubble {
+    position: absolute;
+    inset: -6px;
+    border: 2px solid var(--accent-3);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(58,169,255,0.15), transparent);
+    box-shadow: 0 0 12px var(--accent-3), inset 0 0 8px var(--accent-3);
+    pointer-events: none;
+    animation: shield-pulse 0.8s ease-in-out infinite;
+  }
+  @keyframes shield-pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50%      { opacity: 1; transform: scale(1.08); }
+  }
+
+  /* 아이템 사용 말풍선 */
+  .item-popup {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #000;
+    font-family: "Bowlby One", sans-serif;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    box-shadow: 2px 2px 0 #000;
+    animation: item-pop 1.2s ease-out forwards;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .item-popup::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--accent);
+  }
+  .item-popup.attack { background: var(--accent-2); color: #fff; }
+  .item-popup.attack::after { border-top-color: var(--accent-2); }
+  .item-popup.shield { background: var(--accent-3); color: #fff; }
+  .item-popup.shield::after { border-top-color: var(--accent-3); }
+  .item-popup.slow { background: #a78bfa; color: #fff; }
+  .item-popup.slow::after { border-top-color: #a78bfa; }
+  @keyframes item-pop {
+    0%   { transform: translateX(-50%) translateY(8px) scale(0.5); opacity: 0; }
+    15%  { transform: translateX(-50%) translateY(-4px) scale(1.15); opacity: 1; }
+    25%  { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+    80%  { transform: translateX(-50%) translateY(-2px) scale(1); opacity: 1; }
+    100% { transform: translateX(-50%) translateY(-10px) scale(0.9); opacity: 0; }
+  }
+
+  /* 공격 이펙트 (번개) */
+  .attack-fx {
+    position: absolute;
+    pointer-events: none;
+    z-index: 20;
+    font-size: 32px;
+    transform: translate(-50%, -50%);
+    animation: attack-fx 0.6s ease-out forwards;
+    filter: drop-shadow(0 0 6px var(--accent));
+  }
+  @keyframes attack-fx {
+    0%   { transform: translate(-50%, -50%) scale(0.3) rotate(-15deg); opacity: 0; }
+    30%  { transform: translate(-50%, -50%) scale(1.4) rotate(0deg); opacity: 1; }
+    60%  { transform: translate(-50%, -50%) scale(1.1) rotate(5deg); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(0.8) rotate(-5deg); opacity: 0; }
+  }
+
+  /* 먼지 */
   .dust {
     position: absolute;
-    width: 8px; height: 8px;
-    background: rgba(255,255,255,0.5);
+    width: 6px; height: 6px;
+    background: rgba(180, 130, 80, 0.7);
     border-radius: 50%;
     pointer-events: none;
-    animation: dust-fade 0.6s ease-out forwards;
+    animation: dust-fade 0.7s ease-out forwards;
   }
   @keyframes dust-fade {
-    from { transform: scale(1); opacity: 0.6; }
-    to   { transform: scale(2.5) translateX(-20px); opacity: 0; }
+    from { transform: scale(1); opacity: 0.7; }
+    to   { transform: scale(3) translateX(-30px) translateY(-2px); opacity: 0; }
   }
 
-  /* ============ SIDEBAR ============ */
-  .sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 0;
-  }
-
+  /* ============ 사이드 패널 ============ */
   .panel {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -450,10 +482,10 @@
   }
   .panel-head {
     background: #0b1414;
-    padding: 7px 12px;
+    padding: 6px 10px;
     font-family: "Bebas Neue", sans-serif;
-    font-size: 14px;
-    letter-spacing: 3px;
+    font-size: 13px;
+    letter-spacing: 2.5px;
     color: var(--accent);
     border-bottom: 1px solid var(--border);
     display: flex;
@@ -461,21 +493,81 @@
     align-items: center;
   }
   .panel-body {
-    padding: 10px;
+    padding: 8px;
     overflow-y: auto;
     flex: 1;
   }
 
-  /* 컨트롤 */
+  /* 왼쪽: 실시간 순위 */
+  .left-col, .right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+  }
+
+  .rank-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .rank-item {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    align-items: center;
+    padding: 5px 7px;
+    gap: 6px;
+    background: var(--panel-2);
+    border-left: 3px solid var(--border);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    font-size: 12px;
+  }
+  .rank-item.rank-1 { border-left-color: var(--accent); background: linear-gradient(90deg, rgba(255,210,63,0.18), var(--panel-2)); }
+  .rank-item.rank-2 { border-left-color: #c0c0c0; }
+  .rank-item.rank-3 { border-left-color: #cd7f32; }
+  .rank-item.finished { opacity: 0.85; }
+  .rank-num {
+    font-family: "Bowlby One", sans-serif;
+    font-size: 14px;
+    color: var(--accent);
+  }
+  .rank-item.rank-2 .rank-num { color: #d0d0d0; }
+  .rank-item.rank-3 .rank-num { color: #e89b50; }
+  .rank-item:not(.rank-1):not(.rank-2):not(.rank-3) .rank-num { color: var(--ink-dim); font-size: 12px; }
+  .rank-name {
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+  }
+  .rank-name .animal-tag {
+    color: var(--ink-dim);
+    font-size: 9px;
+    margin-right: 3px;
+  }
+  .rank-progress {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    color: var(--ink-dim);
+    text-align: right;
+    line-height: 1.2;
+  }
+  .rank-progress .speed { color: var(--accent-2); font-weight: 700; }
+  .rank-item.finished .rank-progress { color: var(--accent); font-weight: 700; }
+
+  /* 컨트롤 패널 (오른쪽 하단) */
   .control-row {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-bottom: 10px;
+    gap: 5px;
+    margin-bottom: 8px;
   }
   .control-row label {
     font-family: "JetBrains Mono", monospace;
-    font-size: 10px;
+    font-size: 9px;
     color: var(--ink-dim);
     letter-spacing: 1.5px;
     text-transform: uppercase;
@@ -483,15 +575,15 @@
   .num-input {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
   }
   .num-input button {
     background: var(--panel-2);
     color: var(--ink);
     border: 1px solid var(--border);
-    width: 32px; height: 32px;
+    width: 28px; height: 28px;
     font-family: "Bowlby One", sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
     border-radius: 2px;
     transition: all 0.1s;
@@ -505,23 +597,22 @@
     border: 1px solid var(--border);
     text-align: center;
     font-family: "JetBrains Mono", monospace;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 700;
-    padding: 6px;
+    padding: 4px;
     border-radius: 2px;
   }
-
   .name-list {
     background: #000;
     border: 1px solid var(--border);
     width: 100%;
     color: var(--ink);
     font-family: "JetBrains Mono", monospace;
-    font-size: 12px;
-    padding: 8px;
+    font-size: 11px;
+    padding: 6px;
     resize: none;
     border-radius: 2px;
-    height: 110px;
+    height: 80px;
   }
   .name-list:focus { outline: 1px solid var(--accent); }
 
@@ -529,10 +620,10 @@
     background: var(--accent-2);
     color: #fff;
     border: none;
-    padding: 14px;
+    padding: 12px;
     font-family: "Bowlby One", sans-serif;
-    font-size: 18px;
-    letter-spacing: 3px;
+    font-size: 16px;
+    letter-spacing: 2px;
     cursor: pointer;
     border-radius: 2px;
     width: 100%;
@@ -550,72 +641,60 @@
     background: transparent;
     color: var(--ink-dim);
     border: 1px solid var(--border);
-    padding: 8px;
+    padding: 6px;
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 2px;
     cursor: pointer;
     border-radius: 2px;
     width: 100%;
-    margin-top: 8px;
+    margin-top: 6px;
     transition: all 0.1s;
   }
   .btn-reset:hover { color: var(--ink); border-color: var(--ink); }
 
-  /* 실시간 순위 */
-  .rank-list {
+  /* 이벤트 로그 */
+  .event-log {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
   }
-  .rank-item {
-    display: grid;
-    grid-template-columns: 28px 1fr 50px;
-    align-items: center;
-    padding: 6px 8px;
-    background: var(--panel-2);
-    border-left: 3px solid var(--border);
+  .event-item {
+    font-size: 11px;
+    padding: 4px 7px;
+    background: rgba(255,255,255,0.04);
+    border-left: 2px solid var(--border);
     border-radius: 2px;
-    transition: all 0.3s ease;
-    font-size: 13px;
+    animation: event-slide 0.3s ease-out;
+    line-height: 1.3;
   }
-  .rank-item.rank-1 { border-left-color: var(--accent); background: linear-gradient(90deg, rgba(255,210,63,0.15), var(--panel-2)); }
-  .rank-item.rank-2 { border-left-color: #c0c0c0; }
-  .rank-item.rank-3 { border-left-color: #cd7f32; }
-  .rank-item.finished { opacity: 0.85; }
-
-  .rank-num {
-    font-family: "Bowlby One", sans-serif;
-    font-size: 16px;
-    color: var(--accent);
-  }
-  .rank-item.rank-2 .rank-num { color: #d0d0d0; }
-  .rank-item.rank-3 .rank-num { color: #e89b50; }
-  .rank-item:not(.rank-1):not(.rank-2):not(.rank-3) .rank-num { color: var(--ink-dim); font-size: 14px; }
-
-  .rank-name {
-    font-weight: 700;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .rank-progress {
+  .event-item.boost { border-left-color: var(--accent-2); }
+  .event-item.attack { border-left-color: var(--accent-2); background: rgba(255,94,58,0.1); }
+  .event-item.shield { border-left-color: var(--accent-3); background: rgba(58,169,255,0.08); }
+  .event-item.slow { border-left-color: #a78bfa; }
+  .event-item.finish { border-left-color: var(--accent); background: rgba(255,210,63,0.12); font-weight: 700; }
+  .event-item.start { border-left-color: var(--accent); }
+  .event-item .ev-time {
     font-family: "JetBrains Mono", monospace;
-    font-size: 10px;
+    font-size: 9px;
     color: var(--ink-dim);
-    text-align: right;
+    margin-right: 4px;
   }
-  .rank-item.finished .rank-progress { color: var(--accent); font-weight: 700; }
+  .event-item .ev-name { font-weight: 700; }
+  @keyframes event-slide {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
 
-  /* ============ FOOTER / RESULT ============ */
+  /* ============ FOOTER ============ */
   .footer {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 8px 14px;
+    padding: 6px 12px;
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--ink-dim);
     display: flex;
     justify-content: space-between;
@@ -640,8 +719,8 @@
     background: var(--panel);
     border: 2px solid var(--accent);
     border-radius: 4px;
-    padding: 32px 40px;
-    max-width: 480px;
+    padding: 28px 32px;
+    max-width: 460px;
     width: 90%;
     max-height: 85vh;
     overflow-y: auto;
@@ -654,7 +733,7 @@
   }
   .result-card h2 {
     font-family: "Bebas Neue", sans-serif;
-    font-size: 36px;
+    font-size: 32px;
     letter-spacing: 4px;
     color: var(--accent);
     text-align: center;
@@ -662,70 +741,70 @@
   }
   .result-card .subtitle {
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
+    font-size: 10px;
     text-align: center;
     color: var(--ink-dim);
     letter-spacing: 2px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
   .podium {
     display: grid;
     grid-template-columns: 1fr 1.2fr 1fr;
-    gap: 6px;
+    gap: 5px;
     align-items: end;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
   .podium-spot {
     background: var(--panel-2);
-    padding: 12px 8px;
+    padding: 10px 6px;
     text-align: center;
     border-radius: 2px;
   }
-  .podium-spot.p1 { background: linear-gradient(180deg, var(--accent), #c69824); color: #000; height: 130px; }
-  .podium-spot.p2 { background: linear-gradient(180deg, #d0d0d0, #888); color: #000; height: 105px; }
-  .podium-spot.p3 { background: linear-gradient(180deg, #cd7f32, #8a5520); color: #fff; height: 85px; }
+  .podium-spot.p1 { background: linear-gradient(180deg, var(--accent), #c69824); color: #000; height: 120px; }
+  .podium-spot.p2 { background: linear-gradient(180deg, #d0d0d0, #888); color: #000; height: 95px; }
+  .podium-spot.p3 { background: linear-gradient(180deg, #cd7f32, #8a5520); color: #fff; height: 78px; }
   .podium-rank {
     font-family: "Bowlby One", sans-serif;
-    font-size: 28px;
+    font-size: 24px;
     line-height: 1;
   }
   .podium-name {
     font-weight: 900;
-    font-size: 14px;
-    margin-top: 8px;
+    font-size: 12px;
+    margin-top: 6px;
     word-break: break-all;
   }
   .full-results {
     list-style: none;
     border-top: 1px solid var(--border);
-    padding-top: 12px;
+    padding-top: 10px;
   }
   .full-results li {
     display: flex;
     justify-content: space-between;
-    padding: 5px 4px;
-    font-size: 13px;
+    padding: 4px;
+    font-size: 12px;
     border-bottom: 1px dashed var(--border);
   }
   .full-results li:last-child { border-bottom: none; }
   .full-results .pos {
     font-family: "JetBrains Mono", monospace;
     color: var(--ink-dim);
-    margin-right: 10px;
+    margin-right: 8px;
   }
   .result-actions {
     display: flex;
-    gap: 8px;
-    margin-top: 16px;
+    gap: 6px;
+    margin-top: 14px;
   }
   .result-actions button {
     flex: 1;
-    padding: 10px;
+    padding: 9px;
     border: 1px solid var(--border);
     background: var(--panel-2);
     color: var(--ink);
     font-family: "Bebas Neue", sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     letter-spacing: 2px;
     cursor: pointer;
     border-radius: 2px;
@@ -735,7 +814,7 @@
     border-color: var(--accent-2);
   }
 
-  /* 카운트다운 오버레이 */
+  /* 카운트다운 */
   .countdown {
     position: absolute;
     inset: 0;
@@ -745,7 +824,7 @@
     background: rgba(0,0,0,0.5);
     z-index: 50;
     font-family: "Bowlby One", sans-serif;
-    font-size: 160px;
+    font-size: 140px;
     color: var(--accent);
     text-shadow: 4px 4px 0 #000;
   }
@@ -760,18 +839,18 @@
   }
 
   /* 스크롤바 */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: #0b1414; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--ink-dim); }
 
   /* 반응형 */
-  @media (max-width: 860px) {
-    .stage { grid-template-columns: 1fr; }
-    .sidebar { flex-direction: row; max-height: 240px; }
-    .sidebar .panel { flex: 1; }
-    .marquee { font-size: 20px; }
-    .brand-title { font-size: 22px; }
+  @media (max-width: 1100px) {
+    .stage { grid-template-columns: 1fr; grid-template-rows: 1fr auto auto; }
+    .left-col, .right-col { flex-direction: row; max-height: 200px; }
+    .left-col .panel, .right-col .panel { flex: 1; }
+    .marquee { font-size: 18px; }
+    .brand-title { font-size: 20px; }
+    .brand-sub { display: none; }
   }
 </style>
 </head>
@@ -782,12 +861,12 @@
   <div class="brand">
     <div class="brand-logo"><span>★</span></div>
     <div>
-      <div class="brand-title">DERBY DRAW</div>
-      <div class="brand-sub">RACE LOTTERY SYSTEM</div>
+      <div class="brand-title">DERBY BATTLE</div>
+      <div class="brand-sub">RACE LOTTERY ARENA</div>
     </div>
   </div>
   <div class="marquee">
-    🏇 <em>경마형 제비뽑기</em> 🏁
+    🏇 <em>경마형 제비뽑기</em> ⚡
   </div>
   <div class="clock-wrap">
     <div class="status-pill idle" id="statusPill">● STANDBY</div>
@@ -798,12 +877,25 @@
 <!-- ============== STAGE ============== -->
 <div class="stage">
 
+  <!-- 왼쪽: 실시간 순위 -->
+  <div class="left-col">
+    <div class="panel">
+      <div class="panel-head">
+        <span>🏆 LIVE RANK</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-dim);" id="finishedCount">0/0</span>
+      </div>
+      <div class="panel-body">
+        <ul class="rank-list" id="rankList"></ul>
+      </div>
+    </div>
+  </div>
+
   <!-- 트랙 -->
   <div class="track-wrap">
     <div class="track-header">
       <span class="race-no">▶ RACE #<span id="raceNo">001</span></span>
-      <span>DISTANCE: 1,000M · DURATION: 60.0s</span>
-      <span id="phaseInfo">PHASE: <span style="color:var(--accent)">WAITING</span></span>
+      <span class="distance-info"><span id="trackDistInfo">1000m</span> · <span id="durationInfo">~45s</span></span>
+      <span>PHASE: <span class="phase" id="phaseInfo">WAITING</span></span>
     </div>
     <div class="track" id="track">
       <div class="start-line"></div>
@@ -815,10 +907,15 @@
     </div>
   </div>
 
-  <!-- 사이드바 -->
-  <div class="sidebar">
-    <!-- 컨트롤 -->
-    <div class="panel" id="controlPanel">
+  <!-- 오른쪽: 이벤트 + 컨트롤 -->
+  <div class="right-col">
+    <div class="panel" style="flex:1;">
+      <div class="panel-head">⚡ LIVE FEED</div>
+      <div class="panel-body" id="eventLogBody">
+        <ul class="event-log" id="eventLog"></ul>
+      </div>
+    </div>
+    <div class="panel" id="controlPanel" style="flex:0 0 auto;">
       <div class="panel-head">CONTROL</div>
       <div class="panel-body">
         <div class="control-row">
@@ -830,22 +927,11 @@
           </div>
         </div>
         <div class="control-row">
-          <label>참가자 이름 (선택, 줄바꿈)</label>
-          <textarea id="names" class="name-list" placeholder="비워두면 자동으로 #1, #2... 부여됩니다.&#10;예시:&#10;김철수&#10;이영희&#10;박민수"></textarea>
+          <label>이름 (선택, 줄바꿈)</label>
+          <textarea id="names" class="name-list" placeholder="비워두면 자동 부여&#10;예) 김철수&#10;이영희"></textarea>
         </div>
         <button class="btn-start" id="startBtn">START RACE</button>
         <button class="btn-reset" id="resetBtn">RESET</button>
-      </div>
-    </div>
-
-    <!-- 실시간 순위 -->
-    <div class="panel">
-      <div class="panel-head">
-        <span>LIVE RANKING</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);" id="finishedCount">0/0</span>
-      </div>
-      <div class="panel-body">
-        <ul class="rank-list" id="rankList"></ul>
       </div>
     </div>
   </div>
@@ -853,7 +939,7 @@
 
 <!-- ============== FOOTER ============== -->
 <div class="footer">
-  <span>© DERBY DRAW · 공정한 우연을 시뮬레이션합니다</span>
+  <span>© DERBY BATTLE · 공정한 우연을 시뮬레이션합니다</span>
   <span class="hint" id="footerHint">참가 인원을 설정하고 START RACE를 눌러주세요</span>
 </div>
 
@@ -872,136 +958,252 @@
 </div>
 
 <script>
-/* ==========================================================
-   경마 시뮬레이션 엔진
-   - 각 말마다 고유한 기본속도 + 시간에 따라 변하는 페이스
-   - 부스트(스퍼트), 슬럼프 구간을 랜덤하게 생성
-   - 매 프레임마다 거리 계산 → 결승선 도달시 순위 확정
-   ========================================================== */
+/* =============================================================
+   DERBY BATTLE — 강화된 경마 시뮬레이션
+   - 다양한 동물 캐릭터 (12종)
+   - 아이템 시스템: BOOST, ATTACK(번개), SHIELD, SLOW
+   - 빠른 속도 + 잦은 순위 변동
+   - 실시간 속도(km/h), 이벤트 피드
+   ============================================================= */
 
-// 상태
 const STATE = {
   numHorses: 6,
   names: [],
-  horses: [],     // { id, name, emoji, x, baseSpeed, profile, finished, finishTime, finishOrder }
+  horses: [],
   isRunning: false,
   startTime: 0,
-  raceDuration: 60000, // 60초
-  raceDistance: 1000,  // 가상 거리 단위
+  raceDuration: 45000, // 더 빠르게 (45초 목표)
+  raceDistance: 1000,
   finishOrder: 0,
   trackWidthPx: 0,
-  trackLeftPad: 50,
-  trackRightPad: 50,
+  trackLeftPad: 35,
+  trackRightPad: 35,
   raceCount: 1,
   animFrame: null,
+  animFrameLast: null,
+  events: [],
 };
 
-// 말 색상 팔레트 (몸통, 갈기/꼬리)
-const HORSE_PALETTES = [
-  { body: '#3a2418', mane: '#1a0e08', accent: '#5a3828' },  // 흑갈색 (베이)
-  { body: '#8b5a3c', mane: '#4a2818', accent: '#a87048' },  // 밤색 (체스트넛)
-  { body: '#f0e6d2', mane: '#5a3a20', accent: '#d8c8a8' },  // 팔로미노
-  { body: '#e8e4dc', mane: '#3a3028', accent: '#c8c0b0' },  // 백마
-  { body: '#5a3828', mane: '#2a1810', accent: '#7a4838' },  // 적갈색
-  { body: '#9a8870', mane: '#3a2818', accent: '#b8a890' },  // 두스
-  { body: '#2a1a12', mane: '#0a0604', accent: '#4a2a1a' },  // 흑마
-  { body: '#c89878', mane: '#6a4028', accent: '#e0b090' },  // 라이트 베이
-  { body: '#7a5840', mane: '#3a2010', accent: '#9a7858' },  // 다크 체스트넛
-  { body: '#d8b890', mane: '#5a3020', accent: '#e8c8a0' },  // 더스티 팔로미노
-  { body: '#4a3020', mane: '#1a0a04', accent: '#6a4830' },  // 시일 브라운
-  { body: '#a89878', mane: '#4a3828', accent: '#c0b090' },  // 그룰로
+// ============ 동물 종류 (이름 + SVG 빌더) ============
+// 각 동물은 자기만의 시각적 특성을 가짐
+const ANIMALS = [
+  { name: '말',    emoji: '🐎', body: '#3a2418', mane: '#1a0e08', accent: '#5a3828', type: 'horse' },
+  { name: '낙타',  emoji: '🐪', body: '#c4915a', mane: '#8b5a3c', accent: '#d4a070', type: 'camel' },
+  { name: '양',    emoji: '🐑', body: '#f0f0e8', mane: '#3a3028', accent: '#d8d4c8', type: 'sheep' },
+  { name: '표범',  emoji: '🐆', body: '#d4a04c', mane: '#1a1208', accent: '#8b6028', type: 'leopard' },
+  { name: '늑대',  emoji: '🐺', body: '#6a6058', mane: '#3a3028', accent: '#8b8278', type: 'wolf' },
+  { name: '돼지',  emoji: '🐖', body: '#f4a8a0', mane: '#d88880', accent: '#fac0b8', type: 'pig' },
+  { name: '호랑이',emoji: '🐅', body: '#f0883a', mane: '#1a0a04', accent: '#fab068', type: 'tiger' },
+  { name: '사슴',  emoji: '🦌', body: '#9a6840', mane: '#5a3018', accent: '#b08858', type: 'deer' },
+  { name: '소',    emoji: '🐄', body: '#e8e0d0', mane: '#3a2818', accent: '#a8201a', type: 'cow' },
+  { name: '여우',  emoji: '🦊', body: '#e8722c', mane: '#f0f0e8', accent: '#a04018', type: 'fox' },
+  { name: '얼룩말',emoji: '🦓', body: '#f0e8d8', mane: '#1a1208', accent: '#3a3028', type: 'zebra' },
+  { name: '코뿔소',emoji: '🦏', body: '#888078', mane: '#5a5048', accent: '#a89880', type: 'rhino' },
 ];
 
-// 기수 색상 (각 말마다 다른 유니폼)
+/**
+ * SVG 동물 생성 - 동물 타입에 따라 약간씩 다른 외형
+ * 모든 동물은 4족보행으로 같은 구조 사용하되, 색상/특징적 요소만 다름
+ */
+function createRacerSVG(animal, jockeyColor) {
+  const { body, mane, accent, type, name } = animal;
+
+  // 동물별 특징 (귀, 꼬리, 무늬 등)
+  let ears = '';
+  let tail = '';
+  let pattern = '';
+  let nose = `<ellipse cx="38" cy="11" rx="2" ry="1.3" fill="${accent}"/><circle cx="39" cy="11" r="0.4" fill="#000"/>`;
+
+  // 귀
+  if (type === 'horse' || type === 'zebra' || type === 'camel') {
+    ears = `<path d="M 33 5 L 34 2 L 35.5 5 Z" fill="${body}"/>`;
+  } else if (type === 'wolf' || type === 'fox') {
+    ears = `<path d="M 32 5 L 33 1 L 35 4 Z" fill="${body}"/><path d="M 33 4 L 33.5 2 L 34.5 3.5 Z" fill="${mane}"/>`;
+  } else if (type === 'leopard' || type === 'tiger') {
+    ears = `<circle cx="33" cy="4" r="2" fill="${body}"/><circle cx="33" cy="4" r="1" fill="${mane}"/>`;
+  } else if (type === 'cow' || type === 'rhino') {
+    ears = `<ellipse cx="32" cy="5" rx="2.5" ry="1.5" fill="${body}" transform="rotate(-20 32 5)"/>`;
+  } else if (type === 'pig') {
+    ears = `<path d="M 32 5 L 33 2 L 35 5 L 34 6 Z" fill="${accent}"/>`;
+  } else if (type === 'sheep') {
+    ears = `<ellipse cx="32" cy="6" rx="1.8" ry="1" fill="${mane}" transform="rotate(-30 32 6)"/>`;
+  } else if (type === 'deer') {
+    // 뿔
+    ears = `<path d="M 33 5 L 32 1 M 33 5 L 34 1 M 32 2 L 31 1 M 34 2 L 35 1" stroke="${mane}" stroke-width="0.6" fill="none"/><path d="M 35 5 L 35.5 3 L 36.5 5 Z" fill="${body}"/>`;
+  }
+
+  // 꼬리
+  if (type === 'horse' || type === 'zebra') {
+    tail = `<path d="M 6 14 Q 1 12 0 17 Q -1 22 3 23 Q 5 18 7 18 Z" fill="${mane}"/>`;
+  } else if (type === 'wolf' || type === 'fox') {
+    tail = `<path d="M 6 14 Q 1 11 -2 16 Q -1 20 3 21 Z" fill="${body}"/><path d="M 0 18 Q -2 19 -1 21 Q 1 20 2 18 Z" fill="${type === 'fox' ? '#fff' : mane}"/>`;
+  } else if (type === 'pig') {
+    tail = `<path d="M 7 14 Q 4 13 3 11 Q 5 10 6 12" stroke="${accent}" stroke-width="1.2" fill="none" stroke-linecap="round"/>`;
+  } else if (type === 'sheep' || type === 'deer') {
+    tail = `<ellipse cx="5" cy="15" rx="2" ry="1.5" fill="${type === 'sheep' ? body : '#fff'}"/>`;
+  } else if (type === 'cow') {
+    tail = `<path d="M 6 14 Q 2 14 1 18 Q 3 20 4 20 Q 3 16 6 16 Z" fill="${mane}"/><circle cx="1" cy="19" r="1" fill="${mane}"/>`;
+  } else {
+    tail = `<path d="M 6 14 Q 2 13 1 17 Q 3 19 7 17 Z" fill="${body}"/>`;
+  }
+
+  // 무늬 (얼룩말, 호랑이, 표범, 소)
+  if (type === 'zebra') {
+    pattern = `
+      <rect x="14" y="11" width="1.2" height="5" fill="#1a1208"/>
+      <rect x="18" y="10" width="1.2" height="6" fill="#1a1208"/>
+      <rect x="22" y="11" width="1.2" height="5" fill="#1a1208"/>
+      <rect x="26" y="10" width="1.2" height="6" fill="#1a1208"/>`;
+  } else if (type === 'tiger') {
+    pattern = `
+      <path d="M 14 11 Q 15 10 14 14" stroke="#1a0a04" stroke-width="0.8" fill="none"/>
+      <path d="M 18 10 Q 19 11 18 15" stroke="#1a0a04" stroke-width="0.8" fill="none"/>
+      <path d="M 22 11 Q 23 10 22 14" stroke="#1a0a04" stroke-width="0.8" fill="none"/>
+      <path d="M 26 10 Q 27 11 26 15" stroke="#1a0a04" stroke-width="0.8" fill="none"/>`;
+  } else if (type === 'leopard') {
+    pattern = `
+      <circle cx="14" cy="13" r="1" fill="#1a1208"/>
+      <circle cx="18" cy="11" r="1.2" fill="#1a1208"/>
+      <circle cx="22" cy="13" r="1" fill="#1a1208"/>
+      <circle cx="26" cy="12" r="1.2" fill="#1a1208"/>
+      <circle cx="20" cy="15" r="0.8" fill="#1a1208"/>`;
+  } else if (type === 'cow') {
+    pattern = `
+      <ellipse cx="15" cy="13" rx="2.5" ry="1.8" fill="${accent}"/>
+      <ellipse cx="24" cy="14" rx="3" ry="2" fill="${accent}"/>
+      <ellipse cx="20" cy="11" rx="1.5" ry="1" fill="${accent}"/>`;
+  } else if (type === 'sheep') {
+    // 양털 (구름 모양)
+    pattern = `
+      <circle cx="14" cy="11" r="2" fill="${body}"/>
+      <circle cx="17" cy="10" r="2" fill="${body}"/>
+      <circle cx="21" cy="10" r="2" fill="${body}"/>
+      <circle cx="25" cy="11" r="2" fill="${body}"/>
+      <circle cx="16" cy="14" r="2" fill="${body}"/>
+      <circle cx="22" cy="14" r="2" fill="${body}"/>`;
+  }
+
+  // 코뿔소: 뿔 추가
+  let extra = '';
+  if (type === 'rhino') {
+    extra = `<path d="M 38 9 L 39 5 L 40.5 9 Z" fill="${accent}"/>`;
+  }
+
+  // 사람 (사슴) 갈기
+  let maneShape = '';
+  if (type === 'horse' || type === 'zebra') {
+    maneShape = `
+      <path d="M 28 6 Q 29 4 31 5 L 30 8 Z" fill="${mane}"/>
+      <path d="M 30 5 Q 32 3 33 4 L 32 7 Z" fill="${mane}"/>`;
+  } else if (type === 'wolf' || type === 'tiger') {
+    maneShape = `<path d="M 28 6 Q 30 4 33 6 L 32 8 L 28 8 Z" fill="${mane}"/>`;
+  }
+
+  return `
+<svg class="racer-svg" viewBox="-3 0 45 32" xmlns="http://www.w3.org/2000/svg">
+  ${tail}
+
+  <!-- 뒷다리 -->
+  <g class="leg leg-3" style="transform-origin: 12px 16px;">
+    <rect x="10.5" y="16" width="2.5" height="11" fill="${body}" rx="0.8"/>
+    <rect x="10" y="25" width="3.5" height="2.5" fill="#1a0a04" rx="0.5"/>
+  </g>
+  <g class="leg leg-4" style="transform-origin: 16px 16px;">
+    <rect x="14.5" y="16" width="2.5" height="11" fill="${accent}" rx="0.8"/>
+    <rect x="14" y="25" width="3.5" height="2.5" fill="#1a0a04" rx="0.5"/>
+  </g>
+
+  <!-- 몸통 -->
+  <ellipse cx="18" cy="15" rx="12" ry="5.5" fill="${body}"/>
+  <ellipse cx="18" cy="17" rx="11" ry="3" fill="${accent}" opacity="0.4"/>
+
+  ${pattern}
+
+  <!-- 가슴 -->
+  <ellipse cx="27" cy="16" rx="4.5" ry="5" fill="${body}"/>
+
+  <!-- 안장 + 기수 -->
+  <ellipse cx="18" cy="9" rx="5.5" ry="2" fill="#2a1810"/>
+  <path d="M 14 9 Q 15 4 18 3 Q 21 4 22 9 Z" fill="${jockeyColor}"/>
+  <circle cx="18" cy="3" r="2.2" fill="${jockeyColor}"/>
+  <circle cx="18" cy="3" r="2.2" fill="none" stroke="#000" stroke-width="0.3"/>
+  <!-- 기수 팔 -->
+  <path d="M 21 7 Q 26 7 28 9" stroke="${jockeyColor}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+
+  <!-- 앞다리 -->
+  <g class="leg leg-1" style="transform-origin: 25px 17px;">
+    <rect x="23.5" y="17" width="2.5" height="10" fill="${body}" rx="0.8"/>
+    <rect x="23" y="25" width="3.5" height="2.5" fill="#1a0a04" rx="0.5"/>
+  </g>
+  <g class="leg leg-2" style="transform-origin: 29px 17px;">
+    <rect x="27.5" y="17" width="2.5" height="10" fill="${accent}" rx="0.8"/>
+    <rect x="27" y="25" width="3.5" height="2.5" fill="#1a0a04" rx="0.5"/>
+  </g>
+
+  <!-- 목 -->
+  <path d="M 28 13 Q 33 9 37 7 Q 39 9 37 12 Q 33 15 30 16 Z" fill="${body}"/>
+  ${maneShape}
+
+  <!-- 머리 -->
+  <path d="M 35 7 Q 41 5 43 8 Q 44 11 42 13 Q 40 14 37 12 Q 35 10 35 7 Z" fill="${body}"/>
+  ${extra}
+  ${nose}
+  <!-- 눈 -->
+  <circle cx="39" cy="8" r="0.6" fill="#000"/>
+  <circle cx="39.2" cy="7.8" r="0.2" fill="#fff"/>
+  ${ears}
+</svg>`;
+}
+
+// 기수 색상
 const JOCKEY_COLORS = [
   '#ff5e3a', '#ffd23f', '#3aa9ff', '#4ade80',
   '#e879f9', '#fb923c', '#22d3ee', '#facc15',
   '#f87171', '#a78bfa', '#34d399', '#ec4899'
 ];
 
-/**
- * SVG 말 생성 (옆에서 본 모습, 오른쪽으로 향함)
- * 다리 4개가 따로 회전할 수 있도록 분리
- */
-function createHorseSVG(index) {
-  const palette = HORSE_PALETTES[index % HORSE_PALETTES.length];
-  const jockey = JOCKEY_COLORS[index % JOCKEY_COLORS.length];
-  const body = palette.body;
-  const mane = palette.mane;
-  const accent = palette.accent;
+// 아이템 정의
+const ITEMS = {
+  BOOST: {
+    name: '⚡ BOOST',
+    duration: 1800,
+    effect: 'speed_up',
+    color: 'boost',
+    chance: 0.45,
+    msg: '부스트!'
+  },
+  ATTACK: {
+    name: '⚡ 번개공격',
+    duration: 1200,
+    effect: 'attack_front',
+    color: 'attack',
+    chance: 0.30,
+    msg: '번개공격!'
+  },
+  SHIELD: {
+    name: '🛡 방패',
+    duration: 3500,
+    effect: 'shield',
+    color: 'shield',
+    chance: 0.15,
+    msg: '방패!'
+  },
+  SLOW: {
+    name: '🌀 슬로우',
+    duration: 1600,
+    effect: 'slow_others',
+    color: 'slow',
+    chance: 0.10,
+    msg: '슬로우 트랩!'
+  },
+};
 
-  // 56 x 40 viewbox
-  return `
-<svg class="horse-svg" viewBox="0 0 56 40" xmlns="http://www.w3.org/2000/svg">
-  <!-- 꼬리 -->
-  <path class="tail" d="M 6 18 Q 2 16 1 20 Q 0 24 3 26 Q 5 22 7 22 Z" fill="${mane}"/>
-  <path class="tail" d="M 5 20 Q 1 22 2 27 Q 4 26 6 23 Z" fill="${mane}" opacity="0.8"/>
-
-  <!-- 뒷다리 (왼쪽=뒤쪽, 오른쪽=앞쪽) -->
-  <g class="leg leg-bl" style="transform-box: fill-box;">
-    <rect x="11" y="22" width="3" height="14" fill="${body}" rx="1"/>
-    <rect x="10.5" y="34" width="4" height="3" fill="#1a1208" rx="0.5"/>
-  </g>
-  <g class="leg leg-br" style="transform-box: fill-box;">
-    <rect x="16" y="22" width="3" height="14" fill="${accent}" rx="1"/>
-    <rect x="15.5" y="34" width="4" height="3" fill="#1a1208" rx="0.5"/>
-  </g>
-
-  <!-- 몸통 -->
-  <ellipse cx="22" cy="20" rx="14" ry="7" fill="${body}"/>
-  <!-- 몸통 음영 -->
-  <ellipse cx="22" cy="22" rx="13" ry="4" fill="${accent}" opacity="0.5"/>
-  <!-- 가슴 -->
-  <ellipse cx="34" cy="22" rx="5" ry="6" fill="${body}"/>
-
-  <!-- 기수 (안장 + 사람) -->
-  <ellipse cx="22" cy="13" rx="6" ry="2.5" fill="#2a1810"/>
-  <!-- 기수 몸 -->
-  <path d="M 18 13 Q 19 8 22 7 Q 25 8 26 13 Z" fill="${jockey}"/>
-  <!-- 기수 머리 (헬멧) -->
-  <circle cx="22" cy="6" r="2.5" fill="${jockey}"/>
-  <circle cx="22" cy="6" r="2.5" fill="none" stroke="#000" stroke-width="0.3"/>
-  <!-- 기수 팔 (앞으로 뻗음) -->
-  <path d="M 25 11 Q 30 11 33 13" stroke="${jockey}" stroke-width="2" fill="none" stroke-linecap="round"/>
-
-  <!-- 앞다리 -->
-  <g class="leg leg-fl" style="transform-box: fill-box;">
-    <rect x="32" y="22" width="3" height="14" fill="${body}" rx="1"/>
-    <rect x="31.5" y="34" width="4" height="3" fill="#1a1208" rx="0.5"/>
-  </g>
-  <g class="leg leg-fr" style="transform-box: fill-box;">
-    <rect x="37" y="22" width="3" height="14" fill="${accent}" rx="1"/>
-    <rect x="36.5" y="34" width="4" height="3" fill="#1a1208" rx="0.5"/>
-  </g>
-
-  <!-- 목 -->
-  <path d="M 36 18 Q 42 14 46 10 Q 48 12 46 16 Q 42 20 38 22 Z" fill="${body}"/>
-
-  <!-- 갈기 -->
-  <path class="mane" d="M 38 11 Q 40 8 42 9 L 41 12 Z" fill="${mane}"/>
-  <path class="mane" d="M 40 10 Q 43 7 45 8 L 44 11 Z" fill="${mane}"/>
-  <path class="mane" d="M 42 9 Q 45 6 47 7 L 46 10 Z" fill="${mane}"/>
-
-  <!-- 머리 -->
-  <path d="M 44 9 Q 50 7 53 10 Q 54 13 52 15 Q 50 16 47 14 Q 45 12 44 9 Z" fill="${body}"/>
-  <!-- 코 -->
-  <ellipse cx="52" cy="14" rx="2" ry="1.5" fill="${accent}"/>
-  <circle cx="53" cy="14" r="0.4" fill="#000"/>
-  <!-- 눈 -->
-  <circle cx="49" cy="11" r="0.6" fill="#000"/>
-  <circle cx="49.2" cy="10.8" r="0.2" fill="#fff"/>
-  <!-- 귀 -->
-  <path d="M 46 7 L 47 4 L 48.5 7 Z" fill="${body}"/>
-  <path d="M 46.5 6 L 47.2 5 L 47.8 6.5 Z" fill="${mane}"/>
-</svg>`;
-}
-
-/* ============ DOM ============ */
 const $ = (id) => document.getElementById(id);
 const lanesEl = $('lanes');
 const trackEl = $('track');
 const distMarks = $('distMarks');
 const rankList = $('rankList');
+const eventLogEl = $('eventLog');
 const clockEl = $('clock');
 const statusPill = $('statusPill');
 const phaseInfo = $('phaseInfo');
@@ -1024,12 +1226,12 @@ const raceNoEl = $('raceNo');
 /* ============ 초기화 ============ */
 function init() {
   drawDistanceMarks();
-  setupHorses();
+  setupRacers();
   bindEvents();
   updateTrackWidth();
   window.addEventListener('resize', () => {
     updateTrackWidth();
-    if (!STATE.isRunning) setupHorses();
+    if (!STATE.isRunning) setupRacers();
   });
 }
 
@@ -1039,7 +1241,6 @@ function drawDistanceMarks() {
   positions.forEach(p => {
     const span = document.createElement('span');
     span.textContent = p === 0 ? 'START' : p === 100 ? 'GOAL' : (p * 10) + 'm';
-    // 시각적 위치 (출발선~결승선 기준)
     span.style.left = `calc(${STATE.trackLeftPad}px + (100% - ${STATE.trackLeftPad + STATE.trackRightPad}px) * ${p/100})`;
     distMarks.appendChild(span);
   });
@@ -1049,7 +1250,7 @@ function updateTrackWidth() {
   STATE.trackWidthPx = trackEl.clientWidth - STATE.trackLeftPad - STATE.trackRightPad;
 }
 
-/* ============ 말 생성 ============ */
+/* ============ 참가자 생성 ============ */
 function getNames() {
   const raw = namesInput.value.trim();
   const lines = raw ? raw.split('\n').map(s => s.trim()).filter(Boolean) : [];
@@ -1060,13 +1261,15 @@ function getNames() {
   return result;
 }
 
-function setupHorses() {
+function setupRacers() {
   STATE.numHorses = Math.max(2, Math.min(12, parseInt(countInput.value) || 6));
   countInput.value = STATE.numHorses;
   STATE.names = getNames();
   STATE.finishOrder = 0;
 
-  // 레인 생성
+  // 동물 셔플
+  const animalPool = [...ANIMALS].sort(() => Math.random() - 0.5);
+
   lanesEl.innerHTML = '';
   STATE.horses = [];
 
@@ -1078,140 +1281,76 @@ function setupHorses() {
     label.textContent = i + 1;
     lane.appendChild(label);
 
-    // 말 엘리먼트 (SVG 기반)
-    const horse = document.createElement('div');
-    horse.className = 'horse';
-    horse.dataset.id = i;
-    horse.innerHTML = `
+    const animal = animalPool[i % animalPool.length];
+    const jockey = JOCKEY_COLORS[i % JOCKEY_COLORS.length];
+
+    const racer = document.createElement('div');
+    racer.className = 'racer';
+    racer.dataset.id = i;
+    racer.innerHTML = `
       <div class="speed-lines"></div>
-      ${createHorseSVG(i)}
-      <span class="num">${i + 1}</span>
+      <div class="racer-name">${STATE.names[i]}</div>
+      ${createRacerSVG(animal, jockey)}
     `;
-    lane.appendChild(horse);
+    lane.appendChild(racer);
     lanesEl.appendChild(lane);
 
-    // 말 데이터 + 페이스 프로파일
-    STATE.horses.push(createHorseData(i, horse));
+    STATE.horses.push({
+      id: i,
+      name: STATE.names[i],
+      animal: animal,
+      el: racer,
+      distance: 0,
+      finished: false,
+      finishTime: 0,
+      finishOrder: 0,
+      profile: buildPaceProfile(),
+      currentSpeed: 0,
+      activeEffects: [],   // { type, until, power }
+      nextItemTime: 1500 + Math.random() * 3000, // 첫 아이템 사용 시점
+      itemsUsed: 0,
+    });
   }
 
   updateTrackWidth();
   renderRank(true);
-  positionAllHorsesAtStart();
+  positionAllRacersAtStart();
+  $('trackDistInfo').textContent = STATE.raceDistance + 'm';
+  $('durationInfo').textContent = '~' + Math.round(STATE.raceDuration / 1000) + 's';
 }
 
-function createHorseData(id, el) {
-  return {
-    id,
-    name: STATE.names[id],
-    el,
-    distance: 0,
-    finished: false,
-    finishTime: 0,
-    finishOrder: 0,
-    // 페이스 프로파일: 60초 동안의 속도 변화 함수
-    profile: buildPaceProfile(),
-  };
-}
-
-/**
- * 페이스 프로파일 생성
- * - 기본 속도(baseSpeed)는 가깝게 (편차 5%) 유지해서 모두가 비등하게 출발
- * - 추가로 시간에 따라 sin파 + 랜덤 부스트 구간 + 슬럼프 구간으로 변동을 줌
- * → 이렇게 하면 중간 순위가 자주 바뀌고 결승선 직전까지 결과를 모름
- */
+/* ============ 페이스 프로파일 ============ */
 function buildPaceProfile() {
-  // 기본속도: 모두 비슷하게 (약간의 자연스러운 편차)
-  const base = 1.0 + (Math.random() - 0.5) * 0.05; // 0.975 ~ 1.025
-
-  // 사인파 변동 - 각자 다른 주파수와 위상
+  const base = 1.0 + (Math.random() - 0.5) * 0.06;
+  // 더 강한 사인파 → 더 다이나믹한 변동
   const wave1 = {
-    amp: 0.25 + Math.random() * 0.20,   // 0.25 ~ 0.45
-    freq: 0.6 + Math.random() * 1.4,    // 1~2 사이클
+    amp: 0.35 + Math.random() * 0.25,
+    freq: 0.8 + Math.random() * 1.8,
     phase: Math.random() * Math.PI * 2,
   };
   const wave2 = {
-    amp: 0.15 + Math.random() * 0.15,
-    freq: 2.0 + Math.random() * 3.0,    // 더 빠른 흔들림
+    amp: 0.20 + Math.random() * 0.20,
+    freq: 2.5 + Math.random() * 3.5,
     phase: Math.random() * Math.PI * 2,
   };
-
-  // 부스트 구간 (1~2회): 짧고 빠르게 치고 나감
-  const boosts = [];
-  const numBoosts = 1 + Math.floor(Math.random() * 2);
-  for (let i = 0; i < numBoosts; i++) {
-    boosts.push({
-      start: 0.1 + Math.random() * 0.75,  // 10%~85% 구간 사이에서 시작
-      duration: 0.05 + Math.random() * 0.10, // 5~15% 길이
-      power: 0.6 + Math.random() * 0.6,    // 추가 속도 0.6 ~ 1.2
-    });
-  }
-
-  // 슬럼프 구간 (0~1회): 잠시 느려짐
-  const slumps = [];
-  if (Math.random() < 0.6) {
-    slumps.push({
-      start: 0.15 + Math.random() * 0.55,
-      duration: 0.06 + Math.random() * 0.10,
-      power: 0.3 + Math.random() * 0.3,
-    });
-  }
-
-  // 막판 스퍼트 가능성 (50%): 마지막 15% 구간에서 폭발
-  const finalSpurt = Math.random() < 0.5 ? {
-    start: 0.78 + Math.random() * 0.10,
-    duration: 0.12 + Math.random() * 0.08,
-    power: 0.4 + Math.random() * 0.7,
-  } : null;
-
-  return { base, wave1, wave2, boosts, slumps, finalSpurt };
+  const wave3 = { // 추가 변동
+    amp: 0.12 + Math.random() * 0.12,
+    freq: 5 + Math.random() * 4,
+    phase: Math.random() * Math.PI * 2,
+  };
+  return { base, wave1, wave2, wave3 };
 }
 
-/**
- * t (0~1): 레이스 진행 비율
- * 현재 시점의 "순간 속도 배율"을 계산
- */
 function paceAt(profile, t) {
   let v = profile.base;
-  // 사인파 변동
   v += profile.wave1.amp * Math.sin(profile.wave1.freq * Math.PI * 2 * t + profile.wave1.phase);
   v += profile.wave2.amp * Math.sin(profile.wave2.freq * Math.PI * 2 * t + profile.wave2.phase);
-
-  // 부스트
-  let inBoost = false;
-  for (const b of profile.boosts) {
-    if (t >= b.start && t <= b.start + b.duration) {
-      // 부스트 구간 내에서 부드러운 곡선 (벨 모양)
-      const local = (t - b.start) / b.duration;
-      const bell = Math.sin(local * Math.PI);
-      v += b.power * bell;
-      inBoost = true;
-    }
-  }
-  // 슬럼프
-  for (const s of profile.slumps) {
-    if (t >= s.start && t <= s.start + s.duration) {
-      const local = (t - s.start) / s.duration;
-      const bell = Math.sin(local * Math.PI);
-      v -= s.power * bell;
-    }
-  }
-  // 막판 스퍼트
-  if (profile.finalSpurt) {
-    const fs = profile.finalSpurt;
-    if (t >= fs.start && t <= fs.start + fs.duration) {
-      const local = (t - fs.start) / fs.duration;
-      const bell = Math.sin(local * Math.PI);
-      v += fs.power * bell;
-      inBoost = true;
-    }
-  }
-
-  // 최저 속도 보장 (역주행 방지)
-  if (v < 0.15) v = 0.15;
-  return { v, inBoost };
+  v += profile.wave3.amp * Math.sin(profile.wave3.freq * Math.PI * 2 * t + profile.wave3.phase);
+  if (v < 0.2) v = 0.2;
+  return v;
 }
 
-function positionAllHorsesAtStart() {
+function positionAllRacersAtStart() {
   STATE.horses.forEach(h => {
     h.el.style.left = STATE.trackLeftPad + 'px';
   });
@@ -1223,25 +1362,29 @@ function bindEvents() {
     if (STATE.isRunning) return;
     const v = parseInt(countInput.value) || 6;
     countInput.value = Math.min(12, v + 1);
-    setupHorses();
+    setupRacers();
   });
   decBtn.addEventListener('click', () => {
     if (STATE.isRunning) return;
     const v = parseInt(countInput.value) || 6;
     countInput.value = Math.max(2, v - 1);
-    setupHorses();
+    setupRacers();
   });
   countInput.addEventListener('change', () => {
     if (STATE.isRunning) return;
     let v = parseInt(countInput.value) || 6;
     v = Math.max(2, Math.min(12, v));
     countInput.value = v;
-    setupHorses();
+    setupRacers();
   });
   namesInput.addEventListener('input', () => {
     if (STATE.isRunning) return;
     STATE.names = getNames();
-    STATE.horses.forEach((h, i) => { h.name = STATE.names[i]; });
+    STATE.horses.forEach((h, i) => {
+      h.name = STATE.names[i];
+      const nameEl = h.el.querySelector('.racer-name');
+      if (nameEl) nameEl.textContent = h.name;
+    });
     renderRank(true);
   });
   startBtn.addEventListener('click', startRace);
@@ -1257,17 +1400,25 @@ function bindEvents() {
 /* ============ 레이스 시작 ============ */
 async function startRace() {
   if (STATE.isRunning) return;
-  // 새 페이스 프로파일 재생성 (매 레이스마다 새로운 패턴)
   STATE.horses.forEach(h => {
     h.distance = 0;
     h.finished = false;
     h.finishTime = 0;
     h.finishOrder = 0;
     h.profile = buildPaceProfile();
-    h.el.classList.remove('boost');
+    h.currentSpeed = 0;
+    h.activeEffects = [];
+    h.nextItemTime = 1500 + Math.random() * 3000;
+    h.itemsUsed = 0;
+    h.el.classList.remove('boost', 'shielded', 'slowed', 'hit');
+    // 방패 효과 제거
+    const oldShield = h.el.querySelector('.shield-bubble');
+    if (oldShield) oldShield.remove();
   });
   STATE.finishOrder = 0;
-  positionAllHorsesAtStart();
+  STATE.events = [];
+  eventLogEl.innerHTML = '';
+  positionAllRacersAtStart();
   renderRank(true);
 
   startBtn.disabled = true;
@@ -1280,18 +1431,16 @@ async function startRace() {
   statusPill.textContent = '● COUNTDOWN';
   footerHint.textContent = '곧 출발합니다...';
 
-  // 카운트다운
   await countdown();
 
-  // 시작
   STATE.isRunning = true;
   STATE.startTime = performance.now();
   statusPill.textContent = '● LIVE';
-  phaseInfo.innerHTML = 'PHASE: <span style="color:var(--accent-2)">RUNNING</span>';
+  phaseInfo.textContent = 'RUNNING';
   footerHint.textContent = '🏇 레이스 진행 중!';
+  addEvent('start', 0, '레이스 시작!', '');
 
   STATE.horses.forEach(h => h.el.classList.add('running'));
-
   STATE.animFrame = requestAnimationFrame(tick);
 }
 
@@ -1311,10 +1460,10 @@ function countdown() {
       }
       const txt = countdownEl.querySelector('.text');
       txt.style.animation = 'none';
-      txt.offsetHeight; // reflow
+      txt.offsetHeight;
       txt.style.animation = '';
       txt.textContent = seq[i];
-    }, 800);
+    }, 700);
   });
 }
 
@@ -1322,35 +1471,68 @@ function countdown() {
 function tick(now) {
   if (!STATE.isRunning) return;
   const elapsed = now - STATE.startTime;
-  const t = Math.min(elapsed / STATE.raceDuration, 1); // 0~1
-
-  // dt (초)
-  const dtSec = STATE.animFrameLast ? (now - STATE.animFrameLast) / 1000 : 0.016;
+  const t = Math.min(elapsed / STATE.raceDuration, 1);
+  const dtSec = STATE.animFrameLast ? Math.min((now - STATE.animFrameLast) / 1000, 0.1) : 0.016;
   STATE.animFrameLast = now;
 
-  // 시계
   clockEl.textContent = (elapsed / 1000).toFixed(1) + 's';
 
-  // 각 말의 속도 적용
-  // 평균 속도가 결승선 도달 시간을 결정 →
-  // raceDistance / raceDuration(초) = 평균 픽셀당 거리/초.
-  // base speed 단위는 "기본 진행 속도 = raceDistance / 60초" 가 되도록 정규화
   const baseUnitPerSec = STATE.raceDistance / (STATE.raceDuration / 1000);
 
+  // 1) 효과 만료 처리
+  STATE.horses.forEach(h => {
+    h.activeEffects = h.activeEffects.filter(eff => {
+      if (eff.until <= elapsed) {
+        // 효과 만료
+        applyEffectVisual(h, eff.type, false);
+        return false;
+      }
+      return true;
+    });
+  });
+
+  // 2) 아이템 사용 체크
   STATE.horses.forEach(h => {
     if (h.finished) return;
-    const pace = paceAt(h.profile, t);
-    const speed = baseUnitPerSec * pace.v;
+    if (elapsed >= h.nextItemTime && h.itemsUsed < 4 && t < 0.95) {
+      useItem(h, elapsed);
+      h.itemsUsed++;
+      h.nextItemTime = elapsed + 3500 + Math.random() * 5000;
+    }
+  });
+
+  // 3) 각 말 위치 갱신
+  STATE.horses.forEach(h => {
+    if (h.finished) return;
+    let pace = paceAt(h.profile, t);
+
+    // 효과 적용
+    let speedMultiplier = 1.0;
+    let isBoost = false;
+    let isSlow = false;
+    for (const eff of h.activeEffects) {
+      if (eff.type === 'BOOST') { speedMultiplier *= 2.0; isBoost = true; }
+      if (eff.type === 'SLOW')  { speedMultiplier *= 0.45; isSlow = true; }
+    }
+
+    const speed = baseUnitPerSec * pace * speedMultiplier;
+    h.currentSpeed = speed; // 가상 단위/초
     h.distance += speed * dtSec;
 
-    // 부스트 시각효과
-    if (pace.inBoost) {
-      if (!h.el.classList.contains('boost')) h.el.classList.add('boost');
-      // 가끔 먼지 효과
-      if (Math.random() < 0.15) spawnDust(h.el);
-    } else {
+    // 시각 효과
+    if (isBoost && !h.el.classList.contains('boost')) {
+      h.el.classList.add('boost');
+    } else if (!isBoost && h.el.classList.contains('boost')) {
       h.el.classList.remove('boost');
     }
+    if (isSlow && !h.el.classList.contains('slowed')) {
+      h.el.classList.add('slowed');
+    } else if (!isSlow && h.el.classList.contains('slowed')) {
+      h.el.classList.remove('slowed');
+    }
+
+    // 먼지 (속도가 빠를 때)
+    if (Math.random() < (isBoost ? 0.25 : 0.06)) spawnDust(h.el);
 
     // 위치 갱신
     const ratio = Math.min(h.distance / STATE.raceDistance, 1);
@@ -1363,28 +1545,25 @@ function tick(now) {
       h.finishTime = elapsed;
       STATE.finishOrder += 1;
       h.finishOrder = STATE.finishOrder;
-      h.el.classList.remove('running');
-      h.el.classList.remove('boost');
+      h.el.classList.remove('running', 'boost', 'slowed');
+      const sufx = ['🥇','🥈','🥉'][h.finishOrder-1] || `#${h.finishOrder}`;
+      addEvent('finish', elapsed, `${sufx} ${h.name} 결승선 통과!`, h.name);
     }
   });
 
-  // 순위 갱신
   renderRank(false);
 
   const allFinished = STATE.horses.every(h => h.finished);
-
-  // 마무리 조건: 모두 결승선 통과 OR (60초 경과시 강제 처리)
   if (allFinished) {
     finishRace(elapsed);
     return;
   }
 
-  // 60초 지나도 아직 못 들어온 말은 페이스를 점점 빠르게 (시간초과 방지)
+  // 시간 초과 시 남은 말들 강제 부스트
   if (t >= 1) {
-    // 남은 말들은 강제 부스트
     STATE.horses.forEach(h => {
       if (!h.finished) {
-        h.distance += baseUnitPerSec * 1.5 * dtSec;
+        h.distance += baseUnitPerSec * 1.8 * dtSec;
       }
     });
   }
@@ -1392,22 +1571,144 @@ function tick(now) {
   STATE.animFrame = requestAnimationFrame(tick);
 }
 
-function spawnDust(horseEl) {
-  const dust = document.createElement('div');
-  dust.className = 'dust';
-  const rect = horseEl.getBoundingClientRect();
-  const lane = horseEl.parentElement;
-  const laneRect = lane.getBoundingClientRect();
-  dust.style.left = (rect.left - laneRect.left - 8) + 'px';
-  dust.style.top  = (rect.top - laneRect.top + 18) + 'px';
-  lane.appendChild(dust);
-  setTimeout(() => dust.remove(), 600);
+/* ============ 아이템 시스템 ============ */
+function pickItem() {
+  const r = Math.random();
+  let cum = 0;
+  for (const key of Object.keys(ITEMS)) {
+    cum += ITEMS[key].chance;
+    if (r < cum) return key;
+  }
+  return 'BOOST';
 }
 
-/* ============ 순위 렌더링 ============ */
+function useItem(racer, elapsed) {
+  const itemKey = pickItem();
+  const item = ITEMS[itemKey];
+
+  // 팝업
+  showItemPopup(racer.el, item.msg, item.color);
+
+  if (itemKey === 'BOOST') {
+    racer.activeEffects.push({ type: 'BOOST', until: elapsed + item.duration });
+    addEvent('boost', elapsed, `${racer.name} 부스트!`, racer.name);
+  } else if (itemKey === 'SHIELD') {
+    racer.activeEffects.push({ type: 'SHIELD', until: elapsed + item.duration });
+    applyEffectVisual(racer, 'SHIELD', true);
+    addEvent('shield', elapsed, `${racer.name} 방패 발동!`, racer.name);
+  } else if (itemKey === 'ATTACK') {
+    // 앞 사람 공격
+    const sorted = [...STATE.horses].filter(h => !h.finished && h.id !== racer.id)
+      .sort((a, b) => b.distance - a.distance);
+    // 자기보다 앞에 있는 사람 중 1명 선택
+    const targets = sorted.filter(h => h.distance > racer.distance);
+    if (targets.length > 0) {
+      const target = targets[Math.floor(Math.random() * Math.min(targets.length, 3))]; // 상위권 위주
+      // 방패 보유 체크
+      const hasShield = target.activeEffects.some(e => e.type === 'SHIELD');
+      if (hasShield) {
+        addEvent('shield', elapsed, `${target.name}의 방패가 공격을 막아냄!`, target.name);
+        showAttackFX(target.el, '🛡');
+      } else {
+        target.activeEffects.push({ type: 'SLOW', until: elapsed + 1500 });
+        target.el.classList.add('hit');
+        setTimeout(() => target.el.classList.remove('hit'), 400);
+        showAttackFX(target.el, '⚡');
+        addEvent('attack', elapsed, `${racer.name} → ${target.name} 번개공격!`, racer.name);
+      }
+    } else {
+      // 앞에 아무도 없으면 그냥 부스트로 전환
+      racer.activeEffects.push({ type: 'BOOST', until: elapsed + 1500 });
+      addEvent('boost', elapsed, `${racer.name} 공격 대신 부스트!`, racer.name);
+    }
+  } else if (itemKey === 'SLOW') {
+    // 주변(자기 근처) 2~3명 슬로우
+    const others = STATE.horses.filter(h => !h.finished && h.id !== racer.id);
+    const nearby = others
+      .map(h => ({ h, dist: Math.abs(h.distance - racer.distance) }))
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, 2 + Math.floor(Math.random() * 2));
+    const affected = [];
+    nearby.forEach(({ h }) => {
+      const hasShield = h.activeEffects.some(e => e.type === 'SHIELD');
+      if (!hasShield) {
+        h.activeEffects.push({ type: 'SLOW', until: elapsed + 1300 });
+        affected.push(h.name);
+        showAttackFX(h.el, '🌀');
+      }
+    });
+    if (affected.length > 0) {
+      addEvent('slow', elapsed, `${racer.name} → ${affected.join(', ')} 슬로우!`, racer.name);
+    } else {
+      addEvent('slow', elapsed, `${racer.name} 슬로우 트랩 (모두 방어함)`, racer.name);
+    }
+  }
+}
+
+function applyEffectVisual(racer, type, on) {
+  if (type === 'SHIELD') {
+    if (on) {
+      racer.el.classList.add('shielded');
+      if (!racer.el.querySelector('.shield-bubble')) {
+        const bubble = document.createElement('div');
+        bubble.className = 'shield-bubble';
+        racer.el.appendChild(bubble);
+      }
+    } else {
+      racer.el.classList.remove('shielded');
+      const bubble = racer.el.querySelector('.shield-bubble');
+      if (bubble) bubble.remove();
+    }
+  }
+}
+
+function showItemPopup(el, msg, colorClass) {
+  const popup = document.createElement('div');
+  popup.className = `item-popup ${colorClass}`;
+  popup.textContent = msg;
+  el.appendChild(popup);
+  setTimeout(() => popup.remove(), 1300);
+}
+
+function showAttackFX(el, icon) {
+  const fx = document.createElement('div');
+  fx.className = 'attack-fx';
+  fx.textContent = icon;
+  // 트랙 좌표계로 변환
+  const lane = el.parentElement;
+  const left = parseFloat(el.style.left);
+  fx.style.left = left + 'px';
+  fx.style.top = '50%';
+  lane.appendChild(fx);
+  setTimeout(() => fx.remove(), 600);
+}
+
+function spawnDust(racerEl) {
+  const dust = document.createElement('div');
+  dust.className = 'dust';
+  const lane = racerEl.parentElement;
+  const left = parseFloat(racerEl.style.left);
+  dust.style.left = (left - 20) + 'px';
+  dust.style.top = 'calc(50% + 10px)';
+  lane.appendChild(dust);
+  setTimeout(() => dust.remove(), 700);
+}
+
+/* ============ 이벤트 로그 ============ */
+function addEvent(type, elapsed, msg, name) {
+  const time = (elapsed / 1000).toFixed(1) + 's';
+  const li = document.createElement('li');
+  li.className = `event-item ${type}`;
+  li.innerHTML = `<span class="ev-time">${time}</span>${msg}`;
+  eventLogEl.insertBefore(li, eventLogEl.firstChild);
+  // 최대 30개 유지
+  while (eventLogEl.children.length > 30) {
+    eventLogEl.removeChild(eventLogEl.lastChild);
+  }
+}
+
+/* ============ 순위 ============ */
 function renderRank(forceInitial) {
-  // 결승 통과한 말은 finishOrder 기준,
-  // 아직 안 들어온 말은 현재 distance 기준 정렬
   const sorted = [...STATE.horses].sort((a, b) => {
     if (a.finished && b.finished) return a.finishOrder - b.finishOrder;
     if (a.finished) return -1;
@@ -1415,13 +1716,11 @@ function renderRank(forceInitial) {
     return b.distance - a.distance;
   });
 
-  // 기존 항목 매핑
   const existing = {};
   rankList.querySelectorAll('.rank-item').forEach(el => {
     existing[el.dataset.id] = el;
   });
 
-  // 순위 재배치
   sorted.forEach((h, idx) => {
     let item = existing[h.id];
     if (!item) {
@@ -1436,20 +1735,21 @@ function renderRank(forceInitial) {
       rankList.appendChild(item);
     }
     item.querySelector('.rank-num').textContent = (idx + 1);
-    item.querySelector('.rank-name').textContent = h.name;
+    item.querySelector('.rank-name').innerHTML = `<span class="animal-tag">${h.animal.name}</span>${h.name}`;
     if (h.finished) {
       item.querySelector('.rank-progress').textContent = (h.finishTime / 1000).toFixed(2) + 's';
       item.classList.add('finished');
     } else {
-      const pct = Math.min(100, (h.distance / STATE.raceDistance) * 100);
-      item.querySelector('.rank-progress').textContent = pct.toFixed(0) + '%';
+      const meters = Math.round((h.distance / STATE.raceDistance) * 1000);
+      // km/h 환산 (가상): 현재 속도 * 보정값
+      const kmh = Math.round(h.currentSpeed * 1.8);
+      item.querySelector('.rank-progress').innerHTML = `${meters}m<br><span class="speed">${kmh} km/h</span>`;
       item.classList.remove('finished');
     }
     item.classList.toggle('rank-1', idx === 0);
     item.classList.toggle('rank-2', idx === 1);
     item.classList.toggle('rank-3', idx === 2);
 
-    // DOM 순서 맞추기
     if (rankList.children[idx] !== item) {
       rankList.insertBefore(item, rankList.children[idx]);
     }
@@ -1464,12 +1764,12 @@ function finishRace(elapsed) {
   STATE.isRunning = false;
   cancelAnimationFrame(STATE.animFrame);
   STATE.animFrameLast = null;
-  STATE.horses.forEach(h => h.el.classList.remove('running'));
+  STATE.horses.forEach(h => h.el.classList.remove('running', 'boost', 'slowed'));
 
   statusPill.className = 'status-pill done';
   statusPill.textContent = '● FINISHED';
-  phaseInfo.innerHTML = 'PHASE: <span style="color:var(--accent)">FINISHED</span>';
-  footerHint.textContent = '🏆 레이스 종료! 결과를 확인하세요.';
+  phaseInfo.textContent = 'FINISHED';
+  footerHint.textContent = '🏆 레이스 종료!';
   clockEl.textContent = (elapsed / 1000).toFixed(1) + 's';
 
   startBtn.disabled = false;
@@ -1479,17 +1779,14 @@ function finishRace(elapsed) {
   countInput.disabled = false;
   namesInput.disabled = false;
 
-  // 결과 표시
   showResults();
 }
 
 function showResults() {
   const sorted = [...STATE.horses].sort((a, b) => a.finishOrder - b.finishOrder);
-
-  // Podium (1-2-3, 가운데가 1등)
   podiumEl.innerHTML = '';
-  const order = [1, 0, 2]; // index of sorted: 2등, 1등, 3등
-  order.forEach((idx, position) => {
+  const order = [1, 0, 2];
+  order.forEach((idx) => {
     const h = sorted[idx];
     if (!h) return;
     const cls = idx === 0 ? 'p1' : idx === 1 ? 'p2' : 'p3';
@@ -1498,19 +1795,19 @@ function showResults() {
     div.innerHTML = `
       <div class="podium-rank">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}</div>
       <div class="podium-name">${escapeHtml(h.name)}</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:6px;opacity:0.8;">
+      <div style="font-size:9px;margin-top:3px;opacity:0.7;">${h.animal.name}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:4px;opacity:0.8;">
         ${(h.finishTime/1000).toFixed(2)}s
       </div>
     `;
     podiumEl.appendChild(div);
   });
 
-  // 전체 순위
   fullResultsEl.innerHTML = '';
   sorted.forEach((h, i) => {
     const li = document.createElement('li');
     li.innerHTML = `
-      <span><span class="pos">${String(i+1).padStart(2,'0')}.</span>${escapeHtml(h.name)}</span>
+      <span><span class="pos">${String(i+1).padStart(2,'0')}.</span>${escapeHtml(h.name)} <span style="color:var(--ink-dim);font-size:10px;">(${h.animal.name})</span></span>
       <span style="font-family:'JetBrains Mono',monospace;color:var(--ink-dim);">${(h.finishTime/1000).toFixed(2)}s</span>
     `;
     fullResultsEl.appendChild(li);
@@ -1531,7 +1828,7 @@ function resetRace() {
   clockEl.textContent = '00.0s';
   statusPill.className = 'status-pill idle';
   statusPill.textContent = '● STANDBY';
-  phaseInfo.innerHTML = 'PHASE: <span style="color:var(--accent)">WAITING</span>';
+  phaseInfo.textContent = 'WAITING';
   footerHint.textContent = '참가 인원을 설정하고 START RACE를 눌러주세요';
   startBtn.disabled = false;
   resetBtn.disabled = false;
@@ -1539,7 +1836,8 @@ function resetRace() {
   decBtn.disabled = false;
   countInput.disabled = false;
   namesInput.disabled = false;
-  setupHorses();
+  eventLogEl.innerHTML = '';
+  setupRacers();
 }
 
 function escapeHtml(s) {
@@ -1548,7 +1846,6 @@ function escapeHtml(s) {
   }[c]));
 }
 
-// 시작
 init();
 </script>
 </body>
