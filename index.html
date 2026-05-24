@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>경마형 제비뽑기</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bowlby+One&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-1: #0b1414;
+    --bg-2: #102020;
+    --grass-dark: #1f4d2e;
+    --grass-mid:  #2a6a3e;
+    --grass-light:#3a8a50;
+    --track-1: #c98b5a;
+    --track-2: #b1764a;
+    --track-line: #f4e3c2;
+    --accent: #ffd23f;
+    --accent-2: #ff5e3a;
+    --ink: #f5efe0;
+    --ink-dim: #b8b09a;
+    --panel: #161f1f;
+    --panel-2: #1f2a2a;
+    --border: #2e3a3a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg-1);
+    color: var(--ink);
+    font-family: "Noto Sans KR", system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse at top, #1a2a2a 0%, var(--bg-1) 60%) no-repeat,
+      var(--bg-1);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  /* ============ HEADER ============ */
+  .topbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 18px;
+    background: linear-gradient(180deg, #1a2424, #0f1818);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px #000 inset, 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-logo {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    color: #0b1414;
+    display: grid;
+    place-items: center;
+    font-family: "Bowlby One", sans-serif;
+    font-size: 22px;
+    transform: skewX(-10deg);
+  }
+  .brand-logo span { transform: skewX(10deg); }
+  .brand-title {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+  }
+  .brand-sub {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--ink-dim);
+    margin-top: -3px;
+  }
+
+  .marquee {
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 4px;
+    font-size: 30px;
+    text-align: center;
+    color: var(--accent);
+    text-shadow: 2px 2px 0 #000;
+  }
+  .marquee em {
+    color: var(--ink);
+    font-style: normal;
+  }
+
+  .clock-wrap {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-pill {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: #0b1414;
+    letter-spacing: 1px;
+  }
+  .status-pill.live { color: #ff5e3a; }
+  .status-pill.idle { color: var(--ink-dim); }
+  .status-pill.done { color: var(--accent); }
+
+  .clock {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    background: #000;
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    min-width: 110px;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  /* ============ MAIN ============ */
+  .stage {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 12px;
+    min-height: 0;
+  }
+
+  .track-wrap {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px #000 inset;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .track-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    background: #0b1414;
+    border-bottom: 1px solid var(--border);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    letter-spacing: 1px;
+  }
+  .track-header .race-no {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .track {
+    flex: 1;
+    position: relative;
+    background:
+      linear-gradient(180deg, var(--grass-light) 0%, var(--grass-mid) 50%, var(--grass-dark) 100%);
+    overflow: hidden;
+  }
+
+  /* 잔디 텍스처 */
+  .track::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(0,0,0,0.06) 0 2px, transparent 2px 6px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0 2px, transparent 2px 7px);
+    pointer-events: none;
+  }
+
+  .lanes {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lane {
+    flex: 1;
+    position: relative;
+    border-bottom: 1px dashed rgba(255,255,255,0.18);
+    background: linear-gradient(90deg,
+      rgba(0,0,0,0.0) 0%,
+      rgba(0,0,0,0.08) 50%,
+      rgba(0,0,0,0.0) 100%);
+  }
+  .lane:nth-child(even) {
+    background: linear-gradient(90deg,
+      rgba(255,255,255,0.02) 0%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.02) 100%);
+  }
+  .lane:last-child { border-bottom: none; }
+
+  .lane-label {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: "Bowlby One", sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+    width: 22px;
+    text-align: center;
+    z-index: 1;
+  }
+
+  /* 출발선 */
+  .start-line {
+    position: absolute;
+    left: 40px;
+    top: 0; bottom: 0;
+    width: 6px;
+    background: repeating-linear-gradient(
+      0deg,
+      #fff 0 8px,
+      #000 8px 16px
+    );
+    z-index: 2;
+    opacity: 0.85;
+  }
+  /* 결승선 */
+  .finish-line {
+    position: absolute;
+    right: 40px;
+    top: 0; bottom: 0;
+    width: 10px;
+    background: repeating-conic-gradient(#fff 0 25%, #000 0 50%);
+    background-size: 10px 10px;
+    z-index: 2;
+    box-shadow: 0 0 12px rgba(255, 210, 63, 0.4);
+  }
+  .finish-flag {
+    position: absolute;
+    right: 30px;
+    top: -2px;
+    font-family: "Bebas Neue", sans-serif;
+    color: var(--accent);
+    font-size: 14px;
+    letter-spacing: 2px;
+    background: #000;
+    padding: 2px 8px;
+    z-index: 3;
+    border: 1px solid var(--accent);
+  }
+
+  /* 거리 표시 */
+  .distance-marks {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .distance-marks span {
+    position: absolute;
+    top: 4px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    transform: translateX(-50%);
+  }
+
+  /* 말 */
+  .horse {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px;
+    z-index: 5;
+    will-change: left;
+    transition: left 0.12s linear;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.4));
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .horse .emoji {
+    display: inline-block;
+    transform: scaleX(-1); /* 오른쪽으로 향함 */
+  }
+  .horse.running .emoji {
+    animation: gallop 0.25s steps(2) infinite;
+  }
+  @keyframes gallop {
+    0%   { transform: scaleX(-1) translateY(0px); }
+    50%  { transform: scaleX(-1) translateY(-3px); }
+    100% { transform: scaleX(-1) translateY(0px); }
+  }
+  .horse .num {
+    font-family: "Bowlby One", sans-serif;
+    font-size: 11px;
+    background: var(--ink);
+    color: #000;
+    padding: 1px 5px;
+    border-radius: 2px;
+    line-height: 1.2;
+  }
+  .horse.boost .num {
+    background: var(--accent-2);
+    color: #fff;
+    animation: boost-pulse 0.3s ease-in-out infinite alternate;
+  }
+  @keyframes boost-pulse {
+    from { box-shadow: 0 0 4px var(--accent-2); }
+    to   { box-shadow: 0 0 14px var(--accent-2); }
+  }
+
+  /* 먼지 효과 */
+  .dust {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: dust-fade 0.6s ease-out forwards;
+  }
+  @keyframes dust-fade {
+    from { transform: scale(1); opacity: 0.6; }
+    to   { transform: scale(2.5) translateX(-20px); opacity: 0; }
+  }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .panel-head {
+    background: #0b1414;
+    padding: 7px 12px;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-body {
+    padding: 10px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  /* 컨트롤 */
+  .control-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .control-row label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .num-input {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .num-input button {
+    background: var(--panel-2);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    width: 32px; height: 32px;
+    font-family: "Bowlby One", sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.1s;
+  }
+  .num-input button:hover { background: var(--accent); color: #000; }
+  .num-input button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .num-input input {
+    flex: 1;
+    background: #000;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    text-align: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 6px;
+    border-radius: 2px;
+  }
+
+  .name-list {
+    background: #000;
+    border: 1px solid var(--border);
+    width: 100%;
+    color: var(--ink);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    padding: 8px;
+    resize: none;
+    border-radius: 2px;
+    height: 110px;
+  }
+  .name-list:focus { outline: 1px solid var(--accent); }
+
+  .btn-start {
+    background: var(--accent-2);
+    color: #fff;
+    border: none;
+    padding: 14px;
+    font-family: "Bowlby One", sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    border-radius: 2px;
+    width: 100%;
+    box-shadow: 0 4px 0 #a83b1f, 0 0 0 1px #000;
+    transition: all 0.08s;
+  }
+  .btn-start:hover { transform: translateY(-1px); box-shadow: 0 5px 0 #a83b1f, 0 0 0 1px #000; }
+  .btn-start:active { transform: translateY(3px); box-shadow: 0 1px 0 #a83b1f, 0 0 0 1px #000; }
+  .btn-start:disabled {
+    background: #555;
+    box-shadow: 0 4px 0 #333, 0 0 0 1px #000;
+    cursor: not-allowed;
+  }
+  .btn-reset {
+    background: transparent;
+    color: var(--ink-dim);
+    border: 1px solid var(--border);
+    padding: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 2px;
+    width: 100%;
+    margin-top: 8px;
+    transition: all 0.1s;
+  }
+  .btn-reset:hover { color: var(--ink); border-color: var(--ink); }
+
+  /* 실시간 순위 */
+  .rank-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .rank-item {
+    display: grid;
+    grid-template-columns: 28px 1fr 50px;
+    align-items: center;
+    padding: 6px 8px;
+    background: var(--panel-2);
+    border-left: 3px solid var(--border);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    font-size: 13px;
+  }
+  .rank-item.rank-1 { border-left-color: var(--accent); background: linear-gradient(90deg, rgba(255,210,63,0.15), var(--panel-2)); }
+  .rank-item.rank-2 { border-left-color: #c0c0c0; }
+  .rank-item.rank-3 { border-left-color: #cd7f32; }
+  .rank-item.finished { opacity: 0.85; }
+
+  .rank-num {
+    font-family: "Bowlby One", sans-serif;
+    font-size: 16px;
+    color: var(--accent);
+  }
+  .rank-item.rank-2 .rank-num { color: #d0d0d0; }
+  .rank-item.rank-3 .rank-num { color: #e89b50; }
+  .rank-item:not(.rank-1):not(.rank-2):not(.rank-3) .rank-num { color: var(--ink-dim); font-size: 14px; }
+
+  .rank-name {
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .rank-progress {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--ink-dim);
+    text-align: right;
+  }
+  .rank-item.finished .rank-progress { color: var(--accent); font-weight: 700; }
+
+  /* ============ FOOTER / RESULT ============ */
+  .footer {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 1px;
+  }
+  .footer .hint { color: var(--accent); }
+
+  /* 결과 모달 */
+  .result-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .result-modal.show { display: flex; }
+  .result-card {
+    background: var(--panel);
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+    padding: 32px 40px;
+    max-width: 480px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 0 60px rgba(255, 210, 63, 0.3);
+    animation: slide-in 0.4s ease-out;
+  }
+  @keyframes slide-in {
+    from { transform: translateY(40px) scale(0.95); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  .result-card h2 {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 36px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .result-card .subtitle {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    text-align: center;
+    color: var(--ink-dim);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+  .podium {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 6px;
+    align-items: end;
+    margin-bottom: 20px;
+  }
+  .podium-spot {
+    background: var(--panel-2);
+    padding: 12px 8px;
+    text-align: center;
+    border-radius: 2px;
+  }
+  .podium-spot.p1 { background: linear-gradient(180deg, var(--accent), #c69824); color: #000; height: 130px; }
+  .podium-spot.p2 { background: linear-gradient(180deg, #d0d0d0, #888); color: #000; height: 105px; }
+  .podium-spot.p3 { background: linear-gradient(180deg, #cd7f32, #8a5520); color: #fff; height: 85px; }
+  .podium-rank {
+    font-family: "Bowlby One", sans-serif;
+    font-size: 28px;
+    line-height: 1;
+  }
+  .podium-name {
+    font-weight: 900;
+    font-size: 14px;
+    margin-top: 8px;
+    word-break: break-all;
+  }
+  .full-results {
+    list-style: none;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .full-results li {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 4px;
+    font-size: 13px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .full-results li:last-child { border-bottom: none; }
+  .full-results .pos {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--ink-dim);
+    margin-right: 10px;
+  }
+  .result-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .result-actions button {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--ink);
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .result-actions button.primary {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+  }
+
+  /* 카운트다운 오버레이 */
+  .countdown {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    z-index: 50;
+    font-family: "Bowlby One", sans-serif;
+    font-size: 160px;
+    color: var(--accent);
+    text-shadow: 4px 4px 0 #000;
+  }
+  .countdown.show { display: flex; }
+  .countdown .text {
+    animation: count-pop 1s ease-out;
+  }
+  @keyframes count-pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    50%  { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* 스크롤바 */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0b1414; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink-dim); }
+
+  /* 반응형 */
+  @media (max-width: 860px) {
+    .stage { grid-template-columns: 1fr; }
+    .sidebar { flex-direction: row; max-height: 240px; }
+    .sidebar .panel { flex: 1; }
+    .marquee { font-size: 20px; }
+    .brand-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== TOP BAR ============== -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo"><span>★</span></div>
+    <div>
+      <div class="brand-title">DERBY DRAW</div>
+      <div class="brand-sub">RACE LOTTERY SYSTEM</div>
+    </div>
+  </div>
+  <div class="marquee">
+    🏇 <em>경마형 제비뽑기</em> 🏁
+  </div>
+  <div class="clock-wrap">
+    <div class="status-pill idle" id="statusPill">● STANDBY</div>
+    <div class="clock" id="clock">00.0s</div>
+  </div>
+</div>
+
+<!-- ============== STAGE ============== -->
+<div class="stage">
+
+  <!-- 트랙 -->
+  <div class="track-wrap">
+    <div class="track-header">
+      <span class="race-no">▶ RACE #<span id="raceNo">001</span></span>
+      <span>DISTANCE: 1,000M · DURATION: 60.0s</span>
+      <span id="phaseInfo">PHASE: <span style="color:var(--accent)">WAITING</span></span>
+    </div>
+    <div class="track" id="track">
+      <div class="start-line"></div>
+      <div class="finish-line"></div>
+      <div class="finish-flag">FINISH</div>
+      <div class="distance-marks" id="distMarks"></div>
+      <div class="lanes" id="lanes"></div>
+      <div class="countdown" id="countdown"><div class="text">3</div></div>
+    </div>
+  </div>
+
+  <!-- 사이드바 -->
+  <div class="sidebar">
+    <!-- 컨트롤 -->
+    <div class="panel" id="controlPanel">
+      <div class="panel-head">CONTROL</div>
+      <div class="panel-body">
+        <div class="control-row">
+          <label>참가 인원</label>
+          <div class="num-input">
+            <button id="dec">−</button>
+            <input id="count" type="number" min="2" max="12" value="6" />
+            <button id="inc">+</button>
+          </div>
+        </div>
+        <div class="control-row">
+          <label>참가자 이름 (선택, 줄바꿈)</label>
+          <textarea id="names" class="name-list" placeholder="비워두면 자동으로 #1, #2... 부여됩니다.&#10;예시:&#10;김철수&#10;이영희&#10;박민수"></textarea>
+        </div>
+        <button class="btn-start" id="startBtn">START RACE</button>
+        <button class="btn-reset" id="resetBtn">RESET</button>
+      </div>
+    </div>
+
+    <!-- 실시간 순위 -->
+    <div class="panel">
+      <div class="panel-head">
+        <span>LIVE RANKING</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);" id="finishedCount">0/0</span>
+      </div>
+      <div class="panel-body">
+        <ul class="rank-list" id="rankList"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== FOOTER ============== -->
+<div class="footer">
+  <span>© DERBY DRAW · 공정한 우연을 시뮬레이션합니다</span>
+  <span class="hint" id="footerHint">참가 인원을 설정하고 START RACE를 눌러주세요</span>
+</div>
+
+<!-- 결과 모달 -->
+<div class="result-modal" id="resultModal">
+  <div class="result-card">
+    <h2 id="resultTitle">RACE FINISHED</h2>
+    <div class="subtitle">FINAL STANDINGS</div>
+    <div class="podium" id="podium"></div>
+    <ol class="full-results" id="fullResults"></ol>
+    <div class="result-actions">
+      <button id="closeModal">닫기</button>
+      <button class="primary" id="rerunBtn">한번 더!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   경마 시뮬레이션 엔진
+   - 각 말마다 고유한 기본속도 + 시간에 따라 변하는 페이스
+   - 부스트(스퍼트), 슬럼프 구간을 랜덤하게 생성
+   - 매 프레임마다 거리 계산 → 결승선 도달시 순위 확정
+   ========================================================== */
+
+// 상태
+const STATE = {
+  numHorses: 6,
+  names: [],
+  horses: [],     // { id, name, emoji, x, baseSpeed, profile, finished, finishTime, finishOrder }
+  isRunning: false,
+  startTime: 0,
+  raceDuration: 60000, // 60초
+  raceDistance: 1000,  // 가상 거리 단위
+  finishOrder: 0,
+  trackWidthPx: 0,
+  trackLeftPad: 40,
+  trackRightPad: 40,
+  raceCount: 1,
+  animFrame: null,
+};
+
+// 말 이모지 후보 (색상 다양성 위해)
+const HORSE_EMOJIS = ['🐎', '🐴', '🦓'];
+const HORSE_COLORS = [
+  '#ff5e3a', '#ffd23f', '#3aa9ff', '#4ade80',
+  '#e879f9', '#fb923c', '#22d3ee', '#facc15',
+  '#f87171', '#a78bfa', '#34d399', '#fbbf24'
+];
+
+/* ============ DOM ============ */
+const $ = (id) => document.getElementById(id);
+const lanesEl = $('lanes');
+const trackEl = $('track');
+const distMarks = $('distMarks');
+const rankList = $('rankList');
+const clockEl = $('clock');
+const statusPill = $('statusPill');
+const phaseInfo = $('phaseInfo');
+const finishedCount = $('finishedCount');
+const footerHint = $('footerHint');
+const startBtn = $('startBtn');
+const resetBtn = $('resetBtn');
+const countInput = $('count');
+const namesInput = $('names');
+const incBtn = $('inc');
+const decBtn = $('dec');
+const countdownEl = $('countdown');
+const resultModal = $('resultModal');
+const podiumEl = $('podium');
+const fullResultsEl = $('fullResults');
+const closeModalBtn = $('closeModal');
+const rerunBtn = $('rerunBtn');
+const raceNoEl = $('raceNo');
+
+/* ============ 초기화 ============ */
+function init() {
+  drawDistanceMarks();
+  setupHorses();
+  bindEvents();
+  updateTrackWidth();
+  window.addEventListener('resize', () => {
+    updateTrackWidth();
+    if (!STATE.isRunning) setupHorses();
+  });
+}
+
+function drawDistanceMarks() {
+  distMarks.innerHTML = '';
+  const positions = [0, 25, 50, 75, 100];
+  positions.forEach(p => {
+    const span = document.createElement('span');
+    span.textContent = p === 0 ? 'START' : p === 100 ? 'GOAL' : (p * 10) + 'm';
+    // 시각적 위치 (출발선~결승선 기준)
+    span.style.left = `calc(${STATE.trackLeftPad}px + (100% - ${STATE.trackLeftPad + STATE.trackRightPad}px) * ${p/100})`;
+    distMarks.appendChild(span);
+  });
+}
+
+function updateTrackWidth() {
+  STATE.trackWidthPx = trackEl.clientWidth - STATE.trackLeftPad - STATE.trackRightPad;
+}
+
+/* ============ 말 생성 ============ */
+function getNames() {
+  const raw = namesInput.value.trim();
+  const lines = raw ? raw.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const result = [];
+  for (let i = 0; i < STATE.numHorses; i++) {
+    result.push(lines[i] || `참가자 ${i+1}`);
+  }
+  return result;
+}
+
+function setupHorses() {
+  STATE.numHorses = Math.max(2, Math.min(12, parseInt(countInput.value) || 6));
+  countInput.value = STATE.numHorses;
+  STATE.names = getNames();
+  STATE.finishOrder = 0;
+
+  // 레인 생성
+  lanesEl.innerHTML = '';
+  STATE.horses = [];
+
+  for (let i = 0; i < STATE.numHorses; i++) {
+    const lane = document.createElement('div');
+    lane.className = 'lane';
+    const label = document.createElement('div');
+    label.className = 'lane-label';
+    label.textContent = i + 1;
+    lane.appendChild(label);
+
+    // 말 엘리먼트
+    const horse = document.createElement('div');
+    horse.className = 'horse';
+    horse.dataset.id = i;
+    const emoji = document.createElement('span');
+    emoji.className = 'emoji';
+    emoji.textContent = HORSE_EMOJIS[i % HORSE_EMOJIS.length];
+    emoji.style.color = HORSE_COLORS[i % HORSE_COLORS.length];
+    const num = document.createElement('span');
+    num.className = 'num';
+    num.textContent = (i + 1);
+    horse.appendChild(emoji);
+    horse.appendChild(num);
+    lane.appendChild(horse);
+    lanesEl.appendChild(lane);
+
+    // 말 데이터 + 페이스 프로파일
+    STATE.horses.push(createHorseData(i, horse));
+  }
+
+  updateTrackWidth();
+  renderRank(true);
+  positionAllHorsesAtStart();
+}
+
+function createHorseData(id, el) {
+  return {
+    id,
+    name: STATE.names[id],
+    el,
+    distance: 0,
+    finished: false,
+    finishTime: 0,
+    finishOrder: 0,
+    // 페이스 프로파일: 60초 동안의 속도 변화 함수
+    profile: buildPaceProfile(),
+  };
+}
+
+/**
+ * 페이스 프로파일 생성
+ * - 기본 속도(baseSpeed)는 가깝게 (편차 5%) 유지해서 모두가 비등하게 출발
+ * - 추가로 시간에 따라 sin파 + 랜덤 부스트 구간 + 슬럼프 구간으로 변동을 줌
+ * → 이렇게 하면 중간 순위가 자주 바뀌고 결승선 직전까지 결과를 모름
+ */
+function buildPaceProfile() {
+  // 기본속도: 모두 비슷하게 (약간의 자연스러운 편차)
+  const base = 1.0 + (Math.random() - 0.5) * 0.05; // 0.975 ~ 1.025
+
+  // 사인파 변동 - 각자 다른 주파수와 위상
+  const wave1 = {
+    amp: 0.25 + Math.random() * 0.20,   // 0.25 ~ 0.45
+    freq: 0.6 + Math.random() * 1.4,    // 1~2 사이클
+    phase: Math.random() * Math.PI * 2,
+  };
+  const wave2 = {
+    amp: 0.15 + Math.random() * 0.15,
+    freq: 2.0 + Math.random() * 3.0,    // 더 빠른 흔들림
+    phase: Math.random() * Math.PI * 2,
+  };
+
+  // 부스트 구간 (1~2회): 짧고 빠르게 치고 나감
+  const boosts = [];
+  const numBoosts = 1 + Math.floor(Math.random() * 2);
+  for (let i = 0; i < numBoosts; i++) {
+    boosts.push({
+      start: 0.1 + Math.random() * 0.75,  // 10%~85% 구간 사이에서 시작
+      duration: 0.05 + Math.random() * 0.10, // 5~15% 길이
+      power: 0.6 + Math.random() * 0.6,    // 추가 속도 0.6 ~ 1.2
+    });
+  }
+
+  // 슬럼프 구간 (0~1회): 잠시 느려짐
+  const slumps = [];
+  if (Math.random() < 0.6) {
+    slumps.push({
+      start: 0.15 + Math.random() * 0.55,
+      duration: 0.06 + Math.random() * 0.10,
+      power: 0.3 + Math.random() * 0.3,
+    });
+  }
+
+  // 막판 스퍼트 가능성 (50%): 마지막 15% 구간에서 폭발
+  const finalSpurt = Math.random() < 0.5 ? {
+    start: 0.78 + Math.random() * 0.10,
+    duration: 0.12 + Math.random() * 0.08,
+    power: 0.4 + Math.random() * 0.7,
+  } : null;
+
+  return { base, wave1, wave2, boosts, slumps, finalSpurt };
+}
+
+/**
+ * t (0~1): 레이스 진행 비율
+ * 현재 시점의 "순간 속도 배율"을 계산
+ */
+function paceAt(profile, t) {
+  let v = profile.base;
+  // 사인파 변동
+  v += profile.wave1.amp * Math.sin(profile.wave1.freq * Math.PI * 2 * t + profile.wave1.phase);
+  v += profile.wave2.amp * Math.sin(profile.wave2.freq * Math.PI * 2 * t + profile.wave2.phase);
+
+  // 부스트
+  let inBoost = false;
+  for (const b of profile.boosts) {
+    if (t >= b.start && t <= b.start + b.duration) {
+      // 부스트 구간 내에서 부드러운 곡선 (벨 모양)
+      const local = (t - b.start) / b.duration;
+      const bell = Math.sin(local * Math.PI);
+      v += b.power * bell;
+      inBoost = true;
+    }
+  }
+  // 슬럼프
+  for (const s of profile.slumps) {
+    if (t >= s.start && t <= s.start + s.duration) {
+      const local = (t - s.start) / s.duration;
+      const bell = Math.sin(local * Math.PI);
+      v -= s.power * bell;
+    }
+  }
+  // 막판 스퍼트
+  if (profile.finalSpurt) {
+    const fs = profile.finalSpurt;
+    if (t >= fs.start && t <= fs.start + fs.duration) {
+      const local = (t - fs.start) / fs.duration;
+      const bell = Math.sin(local * Math.PI);
+      v += fs.power * bell;
+      inBoost = true;
+    }
+  }
+
+  // 최저 속도 보장 (역주행 방지)
+  if (v < 0.15) v = 0.15;
+  return { v, inBoost };
+}
+
+function positionAllHorsesAtStart() {
+  STATE.horses.forEach(h => {
+    h.el.style.left = STATE.trackLeftPad + 'px';
+  });
+}
+
+/* ============ 이벤트 ============ */
+function bindEvents() {
+  incBtn.addEventListener('click', () => {
+    if (STATE.isRunning) return;
+    const v = parseInt(countInput.value) || 6;
+    countInput.value = Math.min(12, v + 1);
+    setupHorses();
+  });
+  decBtn.addEventListener('click', () => {
+    if (STATE.isRunning) return;
+    const v = parseInt(countInput.value) || 6;
+    countInput.value = Math.max(2, v - 1);
+    setupHorses();
+  });
+  countInput.addEventListener('change', () => {
+    if (STATE.isRunning) return;
+    let v = parseInt(countInput.value) || 6;
+    v = Math.max(2, Math.min(12, v));
+    countInput.value = v;
+    setupHorses();
+  });
+  namesInput.addEventListener('input', () => {
+    if (STATE.isRunning) return;
+    STATE.names = getNames();
+    STATE.horses.forEach((h, i) => { h.name = STATE.names[i]; });
+    renderRank(true);
+  });
+  startBtn.addEventListener('click', startRace);
+  resetBtn.addEventListener('click', resetRace);
+  closeModalBtn.addEventListener('click', () => resultModal.classList.remove('show'));
+  rerunBtn.addEventListener('click', () => {
+    resultModal.classList.remove('show');
+    resetRace();
+    setTimeout(startRace, 250);
+  });
+}
+
+/* ============ 레이스 시작 ============ */
+async function startRace() {
+  if (STATE.isRunning) return;
+  // 새 페이스 프로파일 재생성 (매 레이스마다 새로운 패턴)
+  STATE.horses.forEach(h => {
+    h.distance = 0;
+    h.finished = false;
+    h.finishTime = 0;
+    h.finishOrder = 0;
+    h.profile = buildPaceProfile();
+    h.el.classList.remove('boost');
+  });
+  STATE.finishOrder = 0;
+  positionAllHorsesAtStart();
+  renderRank(true);
+
+  startBtn.disabled = true;
+  resetBtn.disabled = true;
+  incBtn.disabled = true;
+  decBtn.disabled = true;
+  countInput.disabled = true;
+  namesInput.disabled = true;
+  statusPill.className = 'status-pill live';
+  statusPill.textContent = '● COUNTDOWN';
+  footerHint.textContent = '곧 출발합니다...';
+
+  // 카운트다운
+  await countdown();
+
+  // 시작
+  STATE.isRunning = true;
+  STATE.startTime = performance.now();
+  statusPill.textContent = '● LIVE';
+  phaseInfo.innerHTML = 'PHASE: <span style="color:var(--accent-2)">RUNNING</span>';
+  footerHint.textContent = '🏇 레이스 진행 중!';
+
+  STATE.horses.forEach(h => h.el.classList.add('running'));
+
+  STATE.animFrame = requestAnimationFrame(tick);
+}
+
+function countdown() {
+  return new Promise(resolve => {
+    const seq = ['3', '2', '1', 'GO!'];
+    let i = 0;
+    countdownEl.classList.add('show');
+    countdownEl.querySelector('.text').textContent = seq[i];
+    const interval = setInterval(() => {
+      i++;
+      if (i >= seq.length) {
+        clearInterval(interval);
+        countdownEl.classList.remove('show');
+        resolve();
+        return;
+      }
+      const txt = countdownEl.querySelector('.text');
+      txt.style.animation = 'none';
+      txt.offsetHeight; // reflow
+      txt.style.animation = '';
+      txt.textContent = seq[i];
+    }, 800);
+  });
+}
+
+/* ============ 메인 루프 ============ */
+function tick(now) {
+  if (!STATE.isRunning) return;
+  const elapsed = now - STATE.startTime;
+  const t = Math.min(elapsed / STATE.raceDuration, 1); // 0~1
+
+  // dt (초)
+  const dtSec = STATE.animFrameLast ? (now - STATE.animFrameLast) / 1000 : 0.016;
+  STATE.animFrameLast = now;
+
+  // 시계
+  clockEl.textContent = (elapsed / 1000).toFixed(1) + 's';
+
+  // 각 말의 속도 적용
+  // 평균 속도가 결승선 도달 시간을 결정 →
+  // raceDistance / raceDuration(초) = 평균 픽셀당 거리/초.
+  // base speed 단위는 "기본 진행 속도 = raceDistance / 60초" 가 되도록 정규화
+  const baseUnitPerSec = STATE.raceDistance / (STATE.raceDuration / 1000);
+
+  STATE.horses.forEach(h => {
+    if (h.finished) return;
+    const pace = paceAt(h.profile, t);
+    const speed = baseUnitPerSec * pace.v;
+    h.distance += speed * dtSec;
+
+    // 부스트 시각효과
+    if (pace.inBoost) {
+      if (!h.el.classList.contains('boost')) h.el.classList.add('boost');
+      // 가끔 먼지 효과
+      if (Math.random() < 0.15) spawnDust(h.el);
+    } else {
+      h.el.classList.remove('boost');
+    }
+
+    // 위치 갱신
+    const ratio = Math.min(h.distance / STATE.raceDistance, 1);
+    const px = STATE.trackLeftPad + ratio * STATE.trackWidthPx;
+    h.el.style.left = px + 'px';
+
+    // 결승 통과
+    if (ratio >= 1 && !h.finished) {
+      h.finished = true;
+      h.finishTime = elapsed;
+      STATE.finishOrder += 1;
+      h.finishOrder = STATE.finishOrder;
+      h.el.classList.remove('running');
+      h.el.classList.remove('boost');
+    }
+  });
+
+  // 순위 갱신
+  renderRank(false);
+
+  const allFinished = STATE.horses.every(h => h.finished);
+
+  // 마무리 조건: 모두 결승선 통과 OR (60초 경과시 강제 처리)
+  if (allFinished) {
+    finishRace(elapsed);
+    return;
+  }
+
+  // 60초 지나도 아직 못 들어온 말은 페이스를 점점 빠르게 (시간초과 방지)
+  if (t >= 1) {
+    // 남은 말들은 강제 부스트
+    STATE.horses.forEach(h => {
+      if (!h.finished) {
+        h.distance += baseUnitPerSec * 1.5 * dtSec;
+      }
+    });
+  }
+
+  STATE.animFrame = requestAnimationFrame(tick);
+}
+
+function spawnDust(horseEl) {
+  const dust = document.createElement('div');
+  dust.className = 'dust';
+  const rect = horseEl.getBoundingClientRect();
+  const lane = horseEl.parentElement;
+  const laneRect = lane.getBoundingClientRect();
+  dust.style.left = (rect.left - laneRect.left - 8) + 'px';
+  dust.style.top  = (rect.top - laneRect.top + 18) + 'px';
+  lane.appendChild(dust);
+  setTimeout(() => dust.remove(), 600);
+}
+
+/* ============ 순위 렌더링 ============ */
+function renderRank(forceInitial) {
+  // 결승 통과한 말은 finishOrder 기준,
+  // 아직 안 들어온 말은 현재 distance 기준 정렬
+  const sorted = [...STATE.horses].sort((a, b) => {
+    if (a.finished && b.finished) return a.finishOrder - b.finishOrder;
+    if (a.finished) return -1;
+    if (b.finished) return 1;
+    return b.distance - a.distance;
+  });
+
+  // 기존 항목 매핑
+  const existing = {};
+  rankList.querySelectorAll('.rank-item').forEach(el => {
+    existing[el.dataset.id] = el;
+  });
+
+  // 순위 재배치
+  sorted.forEach((h, idx) => {
+    let item = existing[h.id];
+    if (!item) {
+      item = document.createElement('li');
+      item.className = 'rank-item';
+      item.dataset.id = h.id;
+      item.innerHTML = `
+        <span class="rank-num"></span>
+        <span class="rank-name"></span>
+        <span class="rank-progress"></span>
+      `;
+      rankList.appendChild(item);
+    }
+    item.querySelector('.rank-num').textContent = (idx + 1);
+    item.querySelector('.rank-name').textContent = h.name;
+    if (h.finished) {
+      item.querySelector('.rank-progress').textContent = (h.finishTime / 1000).toFixed(2) + 's';
+      item.classList.add('finished');
+    } else {
+      const pct = Math.min(100, (h.distance / STATE.raceDistance) * 100);
+      item.querySelector('.rank-progress').textContent = pct.toFixed(0) + '%';
+      item.classList.remove('finished');
+    }
+    item.classList.toggle('rank-1', idx === 0);
+    item.classList.toggle('rank-2', idx === 1);
+    item.classList.toggle('rank-3', idx === 2);
+
+    // DOM 순서 맞추기
+    if (rankList.children[idx] !== item) {
+      rankList.insertBefore(item, rankList.children[idx]);
+    }
+  });
+
+  const fin = STATE.horses.filter(h => h.finished).length;
+  finishedCount.textContent = `${fin}/${STATE.horses.length}`;
+}
+
+/* ============ 종료 ============ */
+function finishRace(elapsed) {
+  STATE.isRunning = false;
+  cancelAnimationFrame(STATE.animFrame);
+  STATE.animFrameLast = null;
+  STATE.horses.forEach(h => h.el.classList.remove('running'));
+
+  statusPill.className = 'status-pill done';
+  statusPill.textContent = '● FINISHED';
+  phaseInfo.innerHTML = 'PHASE: <span style="color:var(--accent)">FINISHED</span>';
+  footerHint.textContent = '🏆 레이스 종료! 결과를 확인하세요.';
+  clockEl.textContent = (elapsed / 1000).toFixed(1) + 's';
+
+  startBtn.disabled = false;
+  resetBtn.disabled = false;
+  incBtn.disabled = false;
+  decBtn.disabled = false;
+  countInput.disabled = false;
+  namesInput.disabled = false;
+
+  // 결과 표시
+  showResults();
+}
+
+function showResults() {
+  const sorted = [...STATE.horses].sort((a, b) => a.finishOrder - b.finishOrder);
+
+  // Podium (1-2-3, 가운데가 1등)
+  podiumEl.innerHTML = '';
+  const order = [1, 0, 2]; // index of sorted: 2등, 1등, 3등
+  order.forEach((idx, position) => {
+    const h = sorted[idx];
+    if (!h) return;
+    const cls = idx === 0 ? 'p1' : idx === 1 ? 'p2' : 'p3';
+    const div = document.createElement('div');
+    div.className = `podium-spot ${cls}`;
+    div.innerHTML = `
+      <div class="podium-rank">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}</div>
+      <div class="podium-name">${escapeHtml(h.name)}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:6px;opacity:0.8;">
+        ${(h.finishTime/1000).toFixed(2)}s
+      </div>
+    `;
+    podiumEl.appendChild(div);
+  });
+
+  // 전체 순위
+  fullResultsEl.innerHTML = '';
+  sorted.forEach((h, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span><span class="pos">${String(i+1).padStart(2,'0')}.</span>${escapeHtml(h.name)}</span>
+      <span style="font-family:'JetBrains Mono',monospace;color:var(--ink-dim);">${(h.finishTime/1000).toFixed(2)}s</span>
+    `;
+    fullResultsEl.appendChild(li);
+  });
+
+  STATE.raceCount += 1;
+  raceNoEl.textContent = String(STATE.raceCount).padStart(3, '0');
+
+  setTimeout(() => resultModal.classList.add('show'), 600);
+}
+
+function resetRace() {
+  if (STATE.isRunning) {
+    cancelAnimationFrame(STATE.animFrame);
+    STATE.isRunning = false;
+  }
+  STATE.animFrameLast = null;
+  clockEl.textContent = '00.0s';
+  statusPill.className = 'status-pill idle';
+  statusPill.textContent = '● STANDBY';
+  phaseInfo.innerHTML = 'PHASE: <span style="color:var(--accent)">WAITING</span>';
+  footerHint.textContent = '참가 인원을 설정하고 START RACE를 눌러주세요';
+  startBtn.disabled = false;
+  resetBtn.disabled = false;
+  incBtn.disabled = false;
+  decBtn.disabled = false;
+  countInput.disabled = false;
+  namesInput.disabled = false;
+  setupHorses();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+// 시작
+init();
+</script>
+</body>
+</html>
