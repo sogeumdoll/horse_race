@@ -227,7 +227,7 @@
   /* 출발선 */
   .start-line {
     position: absolute;
-    left: 40px;
+    left: 50px;
     top: 0; bottom: 0;
     width: 6px;
     background: repeating-linear-gradient(
@@ -241,7 +241,7 @@
   /* 결승선 */
   .finish-line {
     position: absolute;
-    right: 40px;
+    right: 50px;
     top: 0; bottom: 0;
     width: 10px;
     background: repeating-conic-gradient(#fff 0 25%, #000 0 50%);
@@ -251,7 +251,7 @@
   }
   .finish-flag {
     position: absolute;
-    right: 30px;
+    right: 40px;
     top: -2px;
     font-family: "Bebas Neue", sans-serif;
     color: var(--accent);
@@ -279,49 +279,142 @@
     transform: translateX(-50%);
   }
 
-  /* 말 */
+  /* 말 - SVG 기반 */
   .horse {
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-size: 28px;
     z-index: 5;
     will-change: left;
     transition: left 0.12s linear;
-    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.4));
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
   }
-  .horse .emoji {
-    display: inline-block;
-    transform: scaleX(-1); /* 오른쪽으로 향함 */
+  .horse-svg {
+    width: 56px;
+    height: 40px;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.45));
+    overflow: visible;
   }
-  .horse.running .emoji {
-    animation: gallop 0.25s steps(2) infinite;
+  /* 몸통 살짝 위아래로 흔들림 */
+  .horse.running .horse-svg {
+    animation: body-bob 0.32s ease-in-out infinite;
   }
-  @keyframes gallop {
-    0%   { transform: scaleX(-1) translateY(0px); }
-    50%  { transform: scaleX(-1) translateY(-3px); }
-    100% { transform: scaleX(-1) translateY(0px); }
+  @keyframes body-bob {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50%      { transform: translateY(-3px) rotate(1deg); }
   }
+  /* 갈기, 꼬리 휘날림 */
+  .mane, .tail {
+    transform-origin: right center;
+    animation: mane-wave 0.35s ease-in-out infinite;
+  }
+  .tail {
+    transform-origin: left center;
+    animation: tail-wave 0.4s ease-in-out infinite;
+  }
+  @keyframes mane-wave {
+    0%, 100% { transform: skewY(0deg); }
+    50%      { transform: skewY(-8deg); }
+  }
+  @keyframes tail-wave {
+    0%, 100% { transform: rotate(-5deg); }
+    50%      { transform: rotate(15deg); }
+  }
+
+  /* 4개의 다리 - 갤럽 패턴 (스텝 애니메이션) */
+  .leg {
+    transform-origin: top center;
+  }
+  .horse.running .leg-fl { animation: gallop-fl 0.32s linear infinite; }
+  .horse.running .leg-fr { animation: gallop-fr 0.32s linear infinite; }
+  .horse.running .leg-bl { animation: gallop-bl 0.32s linear infinite; }
+  .horse.running .leg-br { animation: gallop-br 0.32s linear infinite; }
+
+  /* 실제 말의 갤럽 (rotary gallop) - 앞다리/뒷다리가 교차하며 차고 나감 */
+  @keyframes gallop-fl {
+    0%   { transform: rotate(-40deg) translateY(-2px); }
+    25%  { transform: rotate(20deg)  translateY(0); }
+    50%  { transform: rotate(35deg)  translateY(0); }
+    75%  { transform: rotate(-10deg) translateY(-1px); }
+    100% { transform: rotate(-40deg) translateY(-2px); }
+  }
+  @keyframes gallop-fr {
+    0%   { transform: rotate(20deg)  translateY(0); }
+    25%  { transform: rotate(35deg)  translateY(0); }
+    50%  { transform: rotate(-10deg) translateY(-1px); }
+    75%  { transform: rotate(-40deg) translateY(-2px); }
+    100% { transform: rotate(20deg)  translateY(0); }
+  }
+  @keyframes gallop-bl {
+    0%   { transform: rotate(35deg)  translateY(0); }
+    25%  { transform: rotate(-10deg) translateY(-1px); }
+    50%  { transform: rotate(-40deg) translateY(-2px); }
+    75%  { transform: rotate(20deg)  translateY(0); }
+    100% { transform: rotate(35deg)  translateY(0); }
+  }
+  @keyframes gallop-br {
+    0%   { transform: rotate(-10deg) translateY(-1px); }
+    25%  { transform: rotate(-40deg) translateY(-2px); }
+    50%  { transform: rotate(20deg)  translateY(0); }
+    75%  { transform: rotate(35deg)  translateY(0); }
+    100% { transform: rotate(-10deg) translateY(-1px); }
+  }
+
+  /* 정지 상태 */
+  .horse:not(.running) .leg-fl { transform: rotate(-15deg); }
+  .horse:not(.running) .leg-fr { transform: rotate(-5deg); }
+  .horse:not(.running) .leg-bl { transform: rotate(5deg); }
+  .horse:not(.running) .leg-br { transform: rotate(15deg); }
+
   .horse .num {
     font-family: "Bowlby One", sans-serif;
     font-size: 11px;
     background: var(--ink);
     color: #000;
-    padding: 1px 5px;
+    padding: 2px 6px;
     border-radius: 2px;
     line-height: 1.2;
+    box-shadow: 1px 1px 0 rgba(0,0,0,0.4);
   }
   .horse.boost .num {
     background: var(--accent-2);
     color: #fff;
     animation: boost-pulse 0.3s ease-in-out infinite alternate;
   }
+  .horse.boost .horse-svg {
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.45)) drop-shadow(0 0 6px rgba(255,94,58,0.7));
+  }
   @keyframes boost-pulse {
     from { box-shadow: 0 0 4px var(--accent-2); }
     to   { box-shadow: 0 0 14px var(--accent-2); }
+  }
+  /* 스피드 라인 (부스트 시) */
+  .speed-lines {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .horse.boost .speed-lines { opacity: 1; }
+  .speed-lines::before, .speed-lines::after {
+    content: "";
+    position: absolute;
+    background: rgba(255,255,255,0.7);
+    height: 2px;
+    animation: speed-line 0.3s linear infinite;
+  }
+  .speed-lines::before { width: 18px; top: 8px;  right: 4px; }
+  .speed-lines::after  { width: 24px; top: 18px; right: 0;   animation-delay: 0.15s; }
+  @keyframes speed-line {
+    0%   { transform: translateX(0); opacity: 0.8; }
+    100% { transform: translateX(-30px); opacity: 0; }
   }
 
   /* 먼지 효과 */
@@ -797,19 +890,111 @@ const STATE = {
   raceDistance: 1000,  // 가상 거리 단위
   finishOrder: 0,
   trackWidthPx: 0,
-  trackLeftPad: 40,
-  trackRightPad: 40,
+  trackLeftPad: 50,
+  trackRightPad: 50,
   raceCount: 1,
   animFrame: null,
 };
 
-// 말 이모지 후보 (색상 다양성 위해)
-const HORSE_EMOJIS = ['🐎', '🐴', '🦓'];
-const HORSE_COLORS = [
+// 말 색상 팔레트 (몸통, 갈기/꼬리)
+const HORSE_PALETTES = [
+  { body: '#3a2418', mane: '#1a0e08', accent: '#5a3828' },  // 흑갈색 (베이)
+  { body: '#8b5a3c', mane: '#4a2818', accent: '#a87048' },  // 밤색 (체스트넛)
+  { body: '#f0e6d2', mane: '#5a3a20', accent: '#d8c8a8' },  // 팔로미노
+  { body: '#e8e4dc', mane: '#3a3028', accent: '#c8c0b0' },  // 백마
+  { body: '#5a3828', mane: '#2a1810', accent: '#7a4838' },  // 적갈색
+  { body: '#9a8870', mane: '#3a2818', accent: '#b8a890' },  // 두스
+  { body: '#2a1a12', mane: '#0a0604', accent: '#4a2a1a' },  // 흑마
+  { body: '#c89878', mane: '#6a4028', accent: '#e0b090' },  // 라이트 베이
+  { body: '#7a5840', mane: '#3a2010', accent: '#9a7858' },  // 다크 체스트넛
+  { body: '#d8b890', mane: '#5a3020', accent: '#e8c8a0' },  // 더스티 팔로미노
+  { body: '#4a3020', mane: '#1a0a04', accent: '#6a4830' },  // 시일 브라운
+  { body: '#a89878', mane: '#4a3828', accent: '#c0b090' },  // 그룰로
+];
+
+// 기수 색상 (각 말마다 다른 유니폼)
+const JOCKEY_COLORS = [
   '#ff5e3a', '#ffd23f', '#3aa9ff', '#4ade80',
   '#e879f9', '#fb923c', '#22d3ee', '#facc15',
-  '#f87171', '#a78bfa', '#34d399', '#fbbf24'
+  '#f87171', '#a78bfa', '#34d399', '#ec4899'
 ];
+
+/**
+ * SVG 말 생성 (옆에서 본 모습, 오른쪽으로 향함)
+ * 다리 4개가 따로 회전할 수 있도록 분리
+ */
+function createHorseSVG(index) {
+  const palette = HORSE_PALETTES[index % HORSE_PALETTES.length];
+  const jockey = JOCKEY_COLORS[index % JOCKEY_COLORS.length];
+  const body = palette.body;
+  const mane = palette.mane;
+  const accent = palette.accent;
+
+  // 56 x 40 viewbox
+  return `
+<svg class="horse-svg" viewBox="0 0 56 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- 꼬리 -->
+  <path class="tail" d="M 6 18 Q 2 16 1 20 Q 0 24 3 26 Q 5 22 7 22 Z" fill="${mane}"/>
+  <path class="tail" d="M 5 20 Q 1 22 2 27 Q 4 26 6 23 Z" fill="${mane}" opacity="0.8"/>
+
+  <!-- 뒷다리 (왼쪽=뒤쪽, 오른쪽=앞쪽) -->
+  <g class="leg leg-bl" style="transform-box: fill-box;">
+    <rect x="11" y="22" width="3" height="14" fill="${body}" rx="1"/>
+    <rect x="10.5" y="34" width="4" height="3" fill="#1a1208" rx="0.5"/>
+  </g>
+  <g class="leg leg-br" style="transform-box: fill-box;">
+    <rect x="16" y="22" width="3" height="14" fill="${accent}" rx="1"/>
+    <rect x="15.5" y="34" width="4" height="3" fill="#1a1208" rx="0.5"/>
+  </g>
+
+  <!-- 몸통 -->
+  <ellipse cx="22" cy="20" rx="14" ry="7" fill="${body}"/>
+  <!-- 몸통 음영 -->
+  <ellipse cx="22" cy="22" rx="13" ry="4" fill="${accent}" opacity="0.5"/>
+  <!-- 가슴 -->
+  <ellipse cx="34" cy="22" rx="5" ry="6" fill="${body}"/>
+
+  <!-- 기수 (안장 + 사람) -->
+  <ellipse cx="22" cy="13" rx="6" ry="2.5" fill="#2a1810"/>
+  <!-- 기수 몸 -->
+  <path d="M 18 13 Q 19 8 22 7 Q 25 8 26 13 Z" fill="${jockey}"/>
+  <!-- 기수 머리 (헬멧) -->
+  <circle cx="22" cy="6" r="2.5" fill="${jockey}"/>
+  <circle cx="22" cy="6" r="2.5" fill="none" stroke="#000" stroke-width="0.3"/>
+  <!-- 기수 팔 (앞으로 뻗음) -->
+  <path d="M 25 11 Q 30 11 33 13" stroke="${jockey}" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- 앞다리 -->
+  <g class="leg leg-fl" style="transform-box: fill-box;">
+    <rect x="32" y="22" width="3" height="14" fill="${body}" rx="1"/>
+    <rect x="31.5" y="34" width="4" height="3" fill="#1a1208" rx="0.5"/>
+  </g>
+  <g class="leg leg-fr" style="transform-box: fill-box;">
+    <rect x="37" y="22" width="3" height="14" fill="${accent}" rx="1"/>
+    <rect x="36.5" y="34" width="4" height="3" fill="#1a1208" rx="0.5"/>
+  </g>
+
+  <!-- 목 -->
+  <path d="M 36 18 Q 42 14 46 10 Q 48 12 46 16 Q 42 20 38 22 Z" fill="${body}"/>
+
+  <!-- 갈기 -->
+  <path class="mane" d="M 38 11 Q 40 8 42 9 L 41 12 Z" fill="${mane}"/>
+  <path class="mane" d="M 40 10 Q 43 7 45 8 L 44 11 Z" fill="${mane}"/>
+  <path class="mane" d="M 42 9 Q 45 6 47 7 L 46 10 Z" fill="${mane}"/>
+
+  <!-- 머리 -->
+  <path d="M 44 9 Q 50 7 53 10 Q 54 13 52 15 Q 50 16 47 14 Q 45 12 44 9 Z" fill="${body}"/>
+  <!-- 코 -->
+  <ellipse cx="52" cy="14" rx="2" ry="1.5" fill="${accent}"/>
+  <circle cx="53" cy="14" r="0.4" fill="#000"/>
+  <!-- 눈 -->
+  <circle cx="49" cy="11" r="0.6" fill="#000"/>
+  <circle cx="49.2" cy="10.8" r="0.2" fill="#fff"/>
+  <!-- 귀 -->
+  <path d="M 46 7 L 47 4 L 48.5 7 Z" fill="${body}"/>
+  <path d="M 46.5 6 L 47.2 5 L 47.8 6.5 Z" fill="${mane}"/>
+</svg>`;
+}
 
 /* ============ DOM ============ */
 const $ = (id) => document.getElementById(id);
@@ -893,19 +1078,15 @@ function setupHorses() {
     label.textContent = i + 1;
     lane.appendChild(label);
 
-    // 말 엘리먼트
+    // 말 엘리먼트 (SVG 기반)
     const horse = document.createElement('div');
     horse.className = 'horse';
     horse.dataset.id = i;
-    const emoji = document.createElement('span');
-    emoji.className = 'emoji';
-    emoji.textContent = HORSE_EMOJIS[i % HORSE_EMOJIS.length];
-    emoji.style.color = HORSE_COLORS[i % HORSE_COLORS.length];
-    const num = document.createElement('span');
-    num.className = 'num';
-    num.textContent = (i + 1);
-    horse.appendChild(emoji);
-    horse.appendChild(num);
+    horse.innerHTML = `
+      <div class="speed-lines"></div>
+      ${createHorseSVG(i)}
+      <span class="num">${i + 1}</span>
+    `;
     lane.appendChild(horse);
     lanesEl.appendChild(lane);
 
